@@ -1,0 +1,6 @@
+"EmpId",STRING,"", 10, 1, 15, "", 1, "Employee Id"
+"Name",STRING,"", 30, 2, 15, "", 1, "Name"
+"Address",STRING,"", 30, 3, 15, "", 1, "Address"
+"Salary",NUMERIC,"0000.00", 7, 4, 15, "", 1, "Salary"
+"Phone",STRING, "(###) ###-####", 9, 5, 15, "", 1, "Phone"
+"Email",STRING,"", 30, 6, 15, "", 1, "Email"

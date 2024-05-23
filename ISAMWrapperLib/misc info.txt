@@ -1,0 +1,2 @@
+lib /DEF:"C:\SQLite3\sqlite3.def" /OUT:"C:\SQLite3\sqlite3.lib"
+ "regsvr32.exe /s C:\WINDOWS\system32\***.dll"
