@@ -75,6 +75,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\c\DataEntrydDevTool\DataEntrydDevTool;$(IncludePath)</IncludePath>
     <LibraryPath>C:\c\DataEntrydDevTool\DataEntrydDevTool;$(LibraryPath)</LibraryPath>
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -83,6 +85,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\c\DataEntrydDevTool\DataEntrydDevTool;$(IncludePath)</IncludePath>
     <LibraryPath>C:\c\DataEntrydDevTool\DataEntrydDevTool;$(LibraryPath)</LibraryPath>
+    <IntDir>$(ProjectDir)$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
