@@ -1,4 +1,4 @@
-// Version: 5.20.24.9.46
+// Version: 6.20.24.20.03
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -15,7 +15,6 @@ int main(int argc, char* argv[]) {
      std::string arg1 = argv[1];*/
 
     std::string arg1 = "EmployeeScreen";
-
     namespace fs = std::filesystem;
     // Open the text file
     fs::path currentPath = fs::current_path();
@@ -155,11 +154,6 @@ int main(int argc, char* argv[]) {
         //std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
-
-
-
-
-
 RecordEntryStart:
     std::ofstream debugFile("debug.txt");
     std::string Result = "";
@@ -199,8 +193,8 @@ RecordEntryStart:
         auto& field = fields[index];
 
         //**********ACCEPT INPUT ************
-        field.AcceptInput(field);
-        if (field.inputAction == "exitField_NOT_KEY_F")
+        bool FunctionKey=field.AcceptInput(field,debugFile);
+        if (!FunctionKey)
             goto notFunctionKey;
 
         temp = field.getFieldValue();
@@ -244,14 +238,14 @@ RecordEntryStart:
 
 
                 }
-                goto displayData;
+                goto doDisplayData;
             }
             if (Result == "EditingRecord") {
                 AddingNew = false;
                 EditingRecord = true;
                 if (index == 0)
                     index = 1;
-                goto displayData;
+                goto doDisplayData;
 
 
             }
@@ -268,25 +262,33 @@ RecordEntryStart:
             for (auto& field : fields) {
                 field.setFieldValue("");
             }
-            goto  RecordEntryStart; // displayData; //RecordEntryStart;
+            goto  RecordEntryStart; // displayData; 
         }
     
 
         //goto RecordEntryStart;  //ideally it shouldn't reach this line but just in case
     
     notFunctionKey:
-
+        temp = field.getFieldValue();
         test = DataEntry::stringSwitchNumber(field.inputAction);
         if (test != -99) {
             switch (test) {
             case -1:  //"KEY_UP"       
-                    //debugFile << "KEY_UP" << std::endl;
+                    debugFile << "KEY_UP" << std::endl;
                 if (index > 1) {
                     --index;
+                    //int test = DataEntry::stringSwitchNumber(field.getFieldType());
+                    //// change to not do if its a numeric field??
+                    //if (test!=18)//??
+                    field.setFieldValue(temp); 
+                    fieldValues.push_back(temp);
+                    std::string type = field.getFieldType();
+                    field.displayData();
+
                     auto& field = fields[index];
-                    /*std::string tempnam = field.getfieldName();
+                    std::string tempnam = field.getfieldName();
                     std::string tempval = field.getFieldValue();
-                    debugFile << "index = " << index << " tempnam = " << tempnam << " tempval " << tempval << std::endl;*/
+                    debugFile << "index = " << index << " tempnam = " << tempnam << " tempval " << tempval << std::endl;
                     goto BeginField;
                 }
                 else
@@ -325,7 +327,7 @@ RecordEntryStart:
                         EditingRecord = true;
                         if (index == 0)
                             index = 1;
-                        goto displayData;
+                        goto doDisplayData;
 
 
                     }
@@ -354,11 +356,8 @@ RecordEntryStart:
 
                 }
 
-                debugFile << "KEY_ENTER index " << index << std::endl;
-                //goto displayData
-                wattron(winFormArea, COLOR_PAIR(3));
-                mvwprintw(winFormArea, field.getRow(), field.getFieldColumn(), field.getFieldValue().c_str());
-                wrefresh(winFormArea);
+                debugFile << "KEY_ENTER index " << index << " field.getFieldValue().c_str() = "<< field.getFieldValue().c_str()<<std::endl;
+                field.displayData();
                 index++;
 #pragma endregion // end of code for 'KEY_ENTER' case
             }
@@ -372,7 +371,7 @@ RecordEntryStart:
     index = 1; // index 1 is second field we don't want index 0  because it's the primary key field
     goto BeginField;
 
-    displayData:
+    doDisplayData:
         for (auto& field : fields) {
 
             field.displayData();

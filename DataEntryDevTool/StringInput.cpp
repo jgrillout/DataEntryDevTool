@@ -1,12 +1,8 @@
-//  Version: 5.20.24.9.46
+//  Version: 6.20.24.20.03
 // File: StringInput.cpp
 #pragma once
 #include "DataEntry.h"
-
-
 bool DataEntry::stringInput(DataEntry& dataEntry) {
-
-    
     /*Note: parameter names are diffent then the declartions so they match
     the names of code i borrowed from a business BASIC program GENINPUT.PUB*/
     std::string X$ = "";
@@ -39,33 +35,33 @@ bool DataEntry::stringInput(DataEntry& dataEntry) {
     // Enable keypad mode to capture function keys
     keypad(saveWin, TRUE);
     int c=0;
-    bool quit = false;
-    // Use color pair 2 without reinitializing it
-    wattron(saveWin, COLOR_PAIR(2));
+    bool quit = false;    
+    //wattron(saveWin, COLOR_PAIR(2));
 
-    //mvwprintw(saveWin, saveRow, saveColumn, EDIT$.c_str());
+    mvwprintw(saveWin, saveRow, saveColumn, EDIT$.c_str());
 
-    wattroff(saveWin, COLOR_PAIR(2));
-    wrefresh(saveWin);
-    
-
+    //wattroff(saveWin, COLOR_PAIR(2));
+    //wrefresh(saveWin);
     // Capture user input until Enter key is pressed
     while (quit != true) {
-
-        wattron(saveWin, COLOR_PAIR(2));        
+        wattron(saveWin, COLOR_PAIR(2));
+        //wrefresh(saveWin);
         mvwprintw(saveWin, saveRow, saveColumn, EDIT$.c_str());
-        wmove(saveWin, saveRow, saveColumn + POS);//SAVEPOS
         wrefresh(saveWin);
+        //wattroff(saveWin, COLOR_PAIR(2));
+        //wattron(saveWin, COLOR_PAIR(3));
+        //wrefresh(saveWin);
+
 //GETKEY:
         c = wgetch(saveWin);
-        std::string action = keyname(c);       
+        std::string action = keyname(c);
+#pragma region //start of switch
         switch (c)
         {
         case PADENTER:
         case 10:  // Enter key    
             Action = "KEY_ENTER";
-            goto  exitField;  
-            quit = true;
+            goto  exitField;              
             break;
         case KEY_F(1):
             Action = "KEY_F(1)";
@@ -185,7 +181,7 @@ bool DataEntry::stringInput(DataEntry& dataEntry) {
                 }
             }
             else {
-                Action = "KEY_NOT";// deal with keys i have planned on handling
+                Action = "KEY_NOT";// deal with keys i haven't planned on handling
                 wrefresh(saveWin);
                 quit = true;
                 break;
@@ -198,8 +194,8 @@ bool DataEntry::stringInput(DataEntry& dataEntry) {
            
             if (std::isprint(c)) {
                 char character = static_cast<char>(c);
-                if (allowed(dataEntry.getFieldType(), character, EDIT$) == false)
-                    break;
+                /*if (allowed(dataEntry.getFieldType(), character, EDIT$) == false)
+                    break;*/
 
                 std::string chString(1, character);
 
@@ -228,26 +224,28 @@ bool DataEntry::stringInput(DataEntry& dataEntry) {
                 wrefresh(saveWin);
             }
         }
-        
+#pragma endregion //end of switch
     }
 
     //traceoff();
     if (quit == true) {
         dataEntry.field_value = EDIT$;
         inputResult = EDIT$;
-        inputAction = Action;
-
+        inputAction = Action;       
         // indicates a funtion was  pressed and inputAction indicates which one
             return true;
         
     }
 
 exitField:
-    Action = "exitField_NOT_KEY_F";
-    wrefresh(saveWin);    
+    //Action = "exitField_NOT_KEY_F";
+   // wrefresh(saveWin);    
     dataEntry.field_value = EDIT$;
     inputResult = EDIT$;
-    inputAction = Action;
+    inputAction = Action;    
+    //wattroff(saveWin, COLOR_PAIR(2));
+    //wattron(saveWin, COLOR_PAIR(3));
+    //wrefresh(saveWin);
     return false;// indicates we have a string indicates a funtion was NOT  pressed
     
 };

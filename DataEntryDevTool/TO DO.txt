@@ -1,9 +1,13 @@
+
+rename row to field_row & col to field_col
+more testing & fixing of numeric input
+
 1. how to handle entry of decimal point? prevent decimal if already exits?
 2. if editing an existing number where should cursor be? should i support arrow keys on editing a number?
 3. add other date input capability
 4. add other masked input capability
 5. logic to test if db already exists and if to overwrite and export to text file
-6. in certain cases the up arrow leaves field in reverse
+6. in certain cases(if field is blank) the up arrow leaves field in reverse
 7. add ability to specify the order by in selectRows
 
 

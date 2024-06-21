@@ -1,4 +1,4 @@
-//  Version: 5.20.24.9.46
+//  Version: 6.20.24.20.03
 // File: DataEntry.cpp
 #include "DataEntry.h"
 std::string DataEntry::inputAction;
@@ -16,18 +16,37 @@ void DataEntry::displayLabels() {
     //setLabelText(myString);
     wattron(win, COLOR_PAIR(3));
     mvwprintw(win, row, label_column, label_text.c_str());
+    wrefresh(win);
 }
 
 void DataEntry::displayData() {
     std::string myString = field_value.c_str();
     // remove quotes in data if any
-    myString.erase(std::remove(myString.begin(), myString.end(), '\"'), myString.end());    
-    setFieldValue(removeLeadingSpaces(myString));
+    myString.erase(std::remove(myString.begin(), myString.end(), '\"'), myString.end());
+    // save field in database without spaces
+    std::string myStringNoSpaces = removeLeadingSpaces(myString);
+    setFieldValue(myStringNoSpaces);
+    
     wattron(win, COLOR_PAIR(3));
-    mvwprintw(win, row, field_column, field_value.c_str());
+    int test = DataEntry::stringSwitchNumber(getFieldType());
+
+    if (test == 18) {//numeric field
+        std::string myStringPaddedRight = rightJustifyString(myString, len);
+        mvwprintw(win, row, field_column, myStringPaddedRight.c_str());
+    }
+    else
+    {
+        std::string myStringPaddedLeft = myString;
+        myStringPaddedLeft.resize(len, ' ');
+        mvwprintw(win, row, field_column, myStringPaddedLeft.c_str());
+
+    }
+    wrefresh(win);
 }
 
- bool DataEntry::AcceptInput(DataEntry& dataEntry) {
+
+
+ bool DataEntry::AcceptInput(DataEntry& dataEntry,std::ofstream& debugFile) {
         
     
     bool result = FALSE;
@@ -40,7 +59,7 @@ void DataEntry::displayData() {
         break;
 
     case 18: //NUMERIC:
-        result = numericInput(dataEntry);
+        result = NumericInput(dataEntry,debugFile);
         break;
     }
     std::string temp = dataEntry.field_value.c_str();
@@ -50,33 +69,7 @@ void DataEntry::displayData() {
     return result;
 }
 
- bool DataEntry::allowed(std::string type, char character, std::string EDIT$) {
-     //TODO: Add code to verify more types
-
-     bool result = true;
-     size_t found = false;
-
-     int test = stringSwitchNumber(type);
-     switch (test)
-     {
-
-     case   18: //NUMERIC:
-         found = numtest.find(character);
-         
-        if (found == std::string::npos)
-            result = false;
-        else
-        {
-            if (character == '.' && EDIT$.find(".") != std::string::npos)
-                result = false;//reject . if string already contains .
-            else
-                if (character == '-' && EDIT$.find("-") != std::string::npos)
-                    result = false;//reject - if string already contains -
-        }
-
-     }
-     return result;
- }
+ 
  bool DataEntry::SetupFields(WINDOW* win, std::vector<DataEntry>& fields, std::ifstream& xmlFile) {
 
      std::string field_name = "";
@@ -219,9 +212,13 @@ void DataEntry::displayData() {
  //        return "";
  //    }
 
- //    
- //    return str.substr(start);
- //}
+
+ std::string DataEntry::rightJustifyString(const std::string& str, int len) {
+     if (str.length() >= len) {
+         return str; // If the string is already longer than or equal to len, return it as is
+     }
+     return std::string(len - str.length(), ' ') + str; // Pad with spaces on the left
+ }
 
  bool DataEntry::isValidDate(const char* s) {
      if (strlen(s) != 10) return false; // Quick check for date length
@@ -538,11 +535,20 @@ void DataEntry::displayData() {
              }
              result = "RecordEntryStart";
          }
+         else {
+             wclear(winMsgArea);
+             wrefresh(winMsgArea);
+         }
          break;
+
      case 5: //KEY_F(5)
          if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Restart", COLOR_PAIR(1), KEY_F(5)) == true) {
             
              result = "RecordEntryStart";
+         }
+         else {
+             wclear(winMsgArea);
+             wrefresh(winMsgArea);
          }
          break;
      case 6: break;//KEY_F(6)
@@ -550,6 +556,11 @@ void DataEntry::displayData() {
          if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Exit", COLOR_PAIR(1), KEY_F(7)) == true) {
              result = "Exit";
          }
+         else {
+             wclear(winMsgArea);
+             wrefresh(winMsgArea);
+         }
+
          break;
      default:
          //TODO  add other cases?
@@ -835,6 +846,47 @@ void DataEntry::displayData() {
      }
      return 0;
  }
+ void DataEntry::displayRightToLeft(WINDOW* win, const std::string& input, int row, int col, int inputSize) {
+     int startPos = 0;
+     // Clear the area where the input will be displayed in reverse video
+    wattron(win, A_REVERSE);
+    startPos = col + inputSize-1;
+    for (int i = 0; i < inputSize; ++i) {
+        mvwaddch(win, row, startPos - i, ' ');
+    }
+    wrefresh(win);
+    inputResult = input;
+    std::reverse(inputResult.begin(), inputResult.end()); 
+    //inputResult = input;
+    // Display the input from right to left
+    //startPos = startPos + -1; // Calculate the starting position for display
+    //wattron(win, A_REVERSE);
+    for (int i = 0; i < input.size(); ++i) {
+        mvwaddch(win, row, startPos - i, inputResult[i]);
+        wrefresh(win);
+    }
+
+    wattroff(win, A_REVERSE);
+    wrefresh(win);
+    // Move the cursor to the end of the input string
+    wmove(win, row, col+input.size()); //startPos
+    wrefresh(win);
+}
+
+void DataEntry::inspectMask(const std::string& format, int& leftSize, int& rightSize) {
+    size_t decimalPos = format.find('.');
+
+    if (decimalPos != std::string::npos) {
+        leftSize = decimalPos;
+        rightSize = format.size() - decimalPos - 1;
+    }
+    else {
+        // If no decimal point is found, all characters are considered to the left of the decimal
+        leftSize = format.size();
+        rightSize = 0;
+    }
+}
+
  
 
 

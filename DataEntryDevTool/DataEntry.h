@@ -1,6 +1,8 @@
-// Version: 5.20.24.9.46
+// Version: 6.20.24.20.03
 // File: DataEntry.h
 #pragma once
+#include "curses.h"
+#include "ISAMWrapperLib.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -12,8 +14,6 @@
 #include <cctype>
 #include <assert.h>
 #include <numeric>
-#include "curses.h"
-#include "ISAMWrapperLib.h"
 #include <unordered_map>
 #include <algorithm> // Include the header for std::max
 #include <tuple>
@@ -48,16 +48,16 @@ public:
 	
 	
 	DataEntry(WINDOW* win, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text);
-	static bool AcceptInput(DataEntry& dataEntry);
+	static bool AcceptInput(DataEntry& dataEntry,std::ofstream& debugFile);
 	//---------cut from stringInput.h-------------------------------------------
 	static bool allowed(std::string type, char character, std::string EDIT$);
-	static bool stringInput(DataEntry& DataEntry);
-	static bool numericInput(DataEntry& dataEntry);
-	static void displayInput(WINDOW* win, int row, int col, const std::string& mask, static std::vector<char>& input);
-	static void shiftLeft(WINDOW* win, const std::string& mask, bool decimalEntered,std::vector<char>& input, int ch);
-	static void shiftRight(WINDOW* win, const std::string& mask, std::vector<char>& input, int ch);
-	static void doDecimal(WINDOW* win, const std::string& mask, bool decimalEntered, std::vector<char>& input, int ch);
+	static bool stringInput(DataEntry& DataEntry);		
+	static bool NumericInput(DataEntry& dataEntry,std::ofstream& debugFile);
+	//static void displayNumeric(WINDOW* win, int row, int col, const std::string& mask, std::string& input);
 
+	//static void displayNumeric(DataEntry& dataEntry, std::ofstream& debugFile, int adjustColumn, bool highlight);
+	static void displayRightToLeft(WINDOW* win, const std::string& input, int row, int col, int inputSize);
+	static void inspectMask(const std::string& format, int& leftSize, int& rightSize);
 	static bool validateXml(WINDOW* winFullScreen, WINDOW* winMsgArea, std::ifstream& xmlFile);
 	static bool SetupFields(WINDOW* win, std::vector<DataEntry>& fields, std::ifstream& inputFile);
 	void displayData(); //const;    
@@ -66,6 +66,7 @@ public:
 	static std::string removeLeadingSpaces(const std::string& str);
 	//static std::string removeTrailingSpaces(const std::string& str);
 	static void removeTrailingSpaces(std::string& str);
+	static std::string rightJustifyString(const std::string& str, int len);
 	static bool isValidDate(const char* s);
 	static std::vector<std::pair<std::string, std::string>> transformVector(const std::vector<DataTuple>& inputVector);
 
@@ -96,6 +97,7 @@ public:
 	std::string getFieldType() const {
 		return fieldtype;
 	}
+
 	std::string getMask() const {
 		return field_mask;
 	}
