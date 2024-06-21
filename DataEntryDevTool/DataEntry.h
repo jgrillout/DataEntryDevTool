@@ -1,4 +1,4 @@
-// Version: 6.20.24.20.03
+// Version: 6.21.24.16.05
 // File: DataEntry.h
 #pragma once
 #include "curses.h"
@@ -51,7 +51,7 @@ public:
 	static bool AcceptInput(DataEntry& dataEntry,std::ofstream& debugFile);
 	//---------cut from stringInput.h-------------------------------------------
 	static bool allowed(std::string type, char character, std::string EDIT$);
-	static bool stringInput(DataEntry& DataEntry);		
+	static bool stringInput(DataEntry& DataEntry, std::ofstream& debugFile);
 	static bool NumericInput(DataEntry& dataEntry,std::ofstream& debugFile);
 	//static void displayNumeric(WINDOW* win, int row, int col, const std::string& mask, std::string& input);
 
@@ -76,13 +76,13 @@ public:
 
 	static void FindMiddle(WINDOW* win, int startrow, int startcol, int& outrow, int& outcol, int width, std::string msg);
 	
-	static void PrintInMiddle(WINDOW* win, int startrow, int startcol, int width, std::string& msg, chtype color);
+	static void PrintInMiddle(WINDOW* win, int startrow, int startcol, int width, std::string& msg, chtype color, std::ofstream& debugFile);
 	
 	static std::string askQuestion(WINDOW* win, int startrow, int startcol, int width, std::string prompt, chtype color);
-	static bool confirmAction(WINDOW* msgwin, WINDOW* fullwin, int startrow, int startcol, int width, std::string prompt, chtype color, int keyToPress);	
+	static bool confirmAction(WINDOW* msgwin, WINDOW* fullwin, int startrow, int startcol, int width, std::string prompt, chtype color, int keyToPress, std::ofstream& debugFile);
 	static std::string readRecord(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew, bool prompt, ISAMWrapperLib& lib, const std::string condition, std::vector<DataEntry>& fields);
 	                           
-	static std::string doFunctionKeys(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew,ISAMWrapperLib& lib, std::string& condition, std::vector<DataEntry>& fields);
+	static std::string doFunctionKeys(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew,ISAMWrapperLib& lib, std::string& condition, std::vector<DataEntry>& fields, std::ofstream& debugFile);
 	static int stringSwitchNumber(const std::string& key);
 	static std::string displayLookupWindow(WINDOW* mainWindow, int lookupHeight, int lookupWidth, int lookupStartY, int lookupStartX, std::vector<std::pair<std::string, std::string>>& data, std::string condition);
 	static bool exportTableToCSV(sqlite3* db, const std::string& tableName, const std::string& fileName);

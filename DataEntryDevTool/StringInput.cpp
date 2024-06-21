@@ -1,8 +1,8 @@
-//  Version: 6.20.24.20.03
+//  Version: 6.21.24.16.05
 // File: StringInput.cpp
 #pragma once
 #include "DataEntry.h"
-bool DataEntry::stringInput(DataEntry& dataEntry) {
+bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile) {
     /*Note: parameter names are diffent then the declartions so they match
     the names of code i borrowed from a business BASIC program GENINPUT.PUB*/
     std::string X$ = "";

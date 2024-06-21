@@ -1,4 +1,4 @@
-// Version: 6.20.24.20.03
+// Version: 6.21.24.16.05
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 int main(int argc, char* argv[]) {
-
+    std::ofstream debugFile("debug.txt");
     /* if (argc < 2) {
          std::cout << "No screen information provided." << std::endl;
          return 1;
@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 
     size_t pos = arg1.find("Screen");
     std::string screenTitle = arg1.substr(0, pos);
-    int rows=24, cols=80;
+    
     //std::cout << "screenTitle is " << screenTitle << std::endl;
 
     // Initialize curses    
@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
     //cbreak();
     noecho();
     start_color();
-
-    getmaxyx(stdscr, rows, cols);
+    int stdscrRows = 0, stdscrCols = 0;
+    getmaxyx(stdscr, stdscrRows, stdscrCols);
 
     // Define color pairs for input field
     // white background, blue foreground
@@ -49,21 +49,22 @@ int main(int argc, char* argv[]) {
     init_pair(3, COLOR_WHITE, COLOR_BLUE);
     bkgd(COLOR_PAIR(3));
 
-    WINDOW* winFullScreen = newwin(rows, cols, 0, 0);
+    WINDOW* winFullScreen = newwin(stdscrRows, stdscrCols, 0, 0);
     assert(winFullScreen != NULL);
     /*wattron(winFullScreen, COLOR_PAIR(3));
     wbkgd(winFullScreen, COLOR_PAIR(3));
     box(winFullScreen, ACS_VLINE, ACS_HLINE);*/
     //wrefresh(winFullScreen);
 
-    WINDOW* winFormArea = derwin(winFullScreen, 20, 78, 1, 1);
+    //WINDOW* winFormArea = derwin(winFullScreen, 20, 78, 1, 1);
+    WINDOW* winFormArea = derwin(winFullScreen, stdscrRows -2, stdscrCols -2, 1, 1);
     assert(winFormArea != NULL);
     wattron(winFormArea, COLOR_PAIR(3));
     wbkgd(winFormArea, COLOR_PAIR(3));
     //wrefresh(winFormArea);
     keypad(winFormArea, TRUE);
 
-    WINDOW* winMsgArea = newwin(4, 78, 19, 1);
+    WINDOW* winMsgArea = newwin(4, stdscrCols -2, stdscrRows-5, 1);
     assert(winMsgArea != NULL);
     wattron(winMsgArea, COLOR_PAIR(3));
     wbkgd(winMsgArea, COLOR_PAIR(3));
@@ -82,7 +83,7 @@ int main(int argc, char* argv[]) {
     else {
         std::string err = "XML file validation failed.";
         DataEntry::errMsg(winMsgArea, 0, 0, err);
-        DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Exit", COLOR_PAIR(1), KEY_F(7));
+        DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, stdscrCols, "Exit", COLOR_PAIR(1), KEY_F(7), debugFile);
 
         return 1;
     }
@@ -155,18 +156,24 @@ int main(int argc, char* argv[]) {
         return false;
     }
 RecordEntryStart:
-    std::ofstream debugFile("debug.txt");
+    
     std::string Result = "";
     wclear(winFullScreen);
     wattron(winFullScreen, COLOR_PAIR(3));
     wbkgd(winFullScreen, COLOR_PAIR(3));
     box(winFullScreen, ACS_VLINE, ACS_HLINE);
     wattron(winFullScreen, A_REVERSE);
-    mvwprintw(winFullScreen, 22, 2, "F2 Lookup");
-    mvwprintw(winFullScreen, 22, 12, "F3 Delete");
-    mvwprintw(winFullScreen, 22, 22, "F4 Save");
-    mvwprintw(winFullScreen, 22, 32, "F5 Restart");
-    mvwprintw(winFullScreen, 22, 45, "F7 Exit");
+    
+    int functionKeyRow = stdscrRows - 2;
+    int functionKeyCount = 5;
+    int functionKeygaps = 1;
+    // for spacing to look good, the length of  the text for the fuction key labels must be the same
+    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*2," F2 Lookup  ");   
+    functionKeygaps = stdscrCols / functionKeyCount;
+    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*1," F3  Delete ");
+    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*2,"  F4  Save  ");
+    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*3," F5 Restart ");
+    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*4,"  F7  Exit  ");
     wattroff(winFullScreen, A_REVERSE);
     wrefresh(winFullScreen);
 
@@ -212,7 +219,7 @@ RecordEntryStart:
          debugFile << "index = " << index << " tempnam = " << tempnam << " tempval " << tempval << std::endl;*/
         wrefresh(winFormArea);
     functionKeys:
-        Result = DataEntry::doFunctionKeys(winFullScreen, winMsgArea, arg1, AddingNew, lib, condition, fields);
+        Result = DataEntry::doFunctionKeys(winFullScreen, winMsgArea, arg1, AddingNew, lib, condition, fields, debugFile);
         if (Result == "Exit")
             goto Exit;
 
@@ -399,8 +406,8 @@ RecordEntryStart:
 
 FunctionKeyError:
             msg = "FunctionKeyError occured";
-            DataEntry::errMsg(winMsgArea, 2, 78, msg);
-            if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Exit", COLOR_PAIR(1), KEY_F(7)) == true)
+            DataEntry::errMsg(winMsgArea, 2, stdscrCols, msg);
+            if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, stdscrCols, "Exit", COLOR_PAIR(1), KEY_F(7), debugFile) == true)
             {
                 goto Exit;
             }
@@ -410,8 +417,8 @@ FunctionKeyError:
     
  handleError:
         msg = "handleError occured";
-        DataEntry::errMsg(winMsgArea, 2, 78, msg);
-        if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Exit", COLOR_PAIR(1), KEY_F(7)) == true)
+        DataEntry::errMsg(winMsgArea, 2, stdscrCols, msg);
+        if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, stdscrCols, "Exit", COLOR_PAIR(1), KEY_F(7), debugFile) == true)
         {
             goto Exit;
         }

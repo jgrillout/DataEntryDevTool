@@ -1,4 +1,4 @@
-//  Version: 6.20.24.20.03
+//  Version: 6.21.24.16.05
 // File: DataEntry.cpp
 #include "DataEntry.h"
 std::string DataEntry::inputAction;
@@ -48,14 +48,14 @@ void DataEntry::displayData() {
 
  bool DataEntry::AcceptInput(DataEntry& dataEntry,std::ofstream& debugFile) {
         
-    
+    debugFile << "inside AcceptInput " << std::endl;
     bool result = FALSE;
     std::string type = dataEntry.getFieldType();
     int test = DataEntry::stringSwitchNumber(dataEntry.getFieldType());
     switch (test)    
     {
     case 17: //STRING:
-        result = stringInput(dataEntry);
+        result = stringInput(dataEntry, debugFile);
         break;
 
     case 18: //NUMERIC:
@@ -308,7 +308,10 @@ void DataEntry::displayData() {
      
 
      int outrow, outcol, width;
-     width = 79;
+
+     int winRows = 0, winCols = 0;
+     getmaxyx(win, winRows, winCols);
+     width = winCols;
      beep();
 
 
@@ -325,7 +328,7 @@ void DataEntry::displayData() {
      //wattron(win, color);
      wattron(win,A_BLINK);
      mvwprintw(win, outrow, outcol, "%s", msg.c_str());
-     PrintInMiddle(win,row,col,79,msg, COLOR_PAIR(1));
+     //PrintInMiddle(win,row,col,79,msg, COLOR_PAIR(1));
      //box(win,0,0);
      wattroff(win,A_BLINK);
      wrefresh(win);
@@ -337,11 +340,16 @@ void DataEntry::displayData() {
      refresh();
 
  }
- void DataEntry::PrintInMiddle(WINDOW* win, int startrow, int startcol, int width, std::string& msg, chtype color)
+ void DataEntry::PrintInMiddle(WINDOW* win, int startrow, int startcol, int width, std::string& msg, chtype color, std::ofstream& debugFile)
  {
-     int outrow, outcol;
-
+     int outrow=0, outcol=0;
+     debugFile << " inside PrintInMiddle" << std::endl;
+     debugFile << " startrow = " << startrow << " startcol " << startcol <<" width " << width << std::endl;
+     debugFile << " before FindMiddle" << std::endl;
      FindMiddle(win, startrow, startcol, outrow, outcol, width, msg);
+     debugFile << " after FindMiddle" << std::endl;
+     debugFile << " outrow = " << outrow << " outcol " << outcol << " width " << width << std::endl;
+
      mvwprintw(win, outrow, outcol, "%s", msg.c_str());
      refresh();
 
@@ -357,13 +365,14 @@ void DataEntry::displayData() {
 
      if (win == NULL)
          win = stdscr;
-     getyx(win, row, col);
+     //getyx(win, row, col);
+     getmaxyx(win, row, col);
      if (startcol != 0)
          col = startcol;
      if (startrow != 0)
          row = startrow;
      if (width == 0)
-         width = 80;
+         width = col;
      
      temp = ((width - int(msg.length())) / 2);
      outcol = startcol + (int)temp;
@@ -409,7 +418,7 @@ void DataEntry::displayData() {
          return "No";
      }
  }
- bool  DataEntry::confirmAction(WINDOW* msgwin, WINDOW* fullwin, int startrow, int startcol, int width, std::string prompt, chtype color, int keyToPress)
+ bool  DataEntry::confirmAction(WINDOW* msgwin, WINDOW* fullwin, int startrow, int startcol, int width, std::string prompt, chtype color, int keyToPress, std::ofstream& debugFile)
  {
 
 
@@ -443,10 +452,10 @@ void DataEntry::displayData() {
      message = keyMessage;
      message.append(prompt);
 
-     FindMiddle(msgwin, startrow, startcol, outrow, outcol, width, message);
+     //FindMiddle(msgwin, startrow, startcol, outrow, outcol, width, message);
+     //mvwprintw(msgwin, outrow, outcol, "%s", message.c_str());
 
-
-     mvwprintw(msgwin, outrow, outcol, "%s", message.c_str());
+     PrintInMiddle(msgwin, startrow, startcol, width, message, COLOR_PAIR(1), debugFile);
 
      box(msgwin, 0, 0);
      keypad(msgwin, TRUE);
@@ -469,7 +478,6 @@ void DataEntry::displayData() {
      {
          if (msgwin != stdscr)
          {
-
              result = false;
          }
 
@@ -478,11 +486,13 @@ void DataEntry::displayData() {
      return result;
  }
  
- std::string DataEntry::doFunctionKeys(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew,  ISAMWrapperLib& lib,  std::string& condition, std::vector<DataEntry>& fields) {
+ std::string DataEntry::doFunctionKeys(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew,  ISAMWrapperLib& lib,  std::string& condition, std::vector<DataEntry>& fields, std::ofstream& debugFile) {
+     debugFile << "inside doFunctionKeys" << std::endl;
      std::string result = "";
      int index = 0;
     /* int mainHeight = 24;
      int mainWidth = 80;*/
+
      int lookupHeight = 10;
      int lookupWidth = 50;
      int lookupStartY = 5;
@@ -492,7 +502,8 @@ void DataEntry::displayData() {
      std::vector<std::string> fieldNames;
      std::vector<std::string> fieldValues;
      std::string selectedElement = "";
-
+     int winRows = 0, winCols = 0;
+     getmaxyx(winFullScreen, winRows, winCols);
      for (const auto& entry : fields) {        
          std::string fieldName = entry.getfieldName();
          std::replace(fieldName.begin(), fieldName.end(), ' ', '_');  // Replace spaces with underscores
@@ -516,13 +527,13 @@ void DataEntry::displayData() {
          return result;
          break;
      case 3: //KEY_F(3)
-         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Delete Record", COLOR_PAIR(1), KEY_F(3)) == true) {
+         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, winCols, "Delete Record", COLOR_PAIR(1), KEY_F(3),debugFile) == true) {
              lib.deleteRow(tbl, condition);
              result = "RecordEntryStart";
          }
          break;
      case 4: //KEY_F(4)
-         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Save Record", COLOR_PAIR(1), KEY_F(4)) == true) {
+         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, winCols, "Save Record", COLOR_PAIR(1), KEY_F(4), debugFile) == true) {
              if (AddingNew == true) {
                  lib.insert(tbl, fieldNames, fieldValues);
              }
@@ -542,7 +553,7 @@ void DataEntry::displayData() {
          break;
 
      case 5: //KEY_F(5)
-         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Restart", COLOR_PAIR(1), KEY_F(5)) == true) {
+         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, winCols, "Restart", COLOR_PAIR(1), KEY_F(5), debugFile) == true) {
             
              result = "RecordEntryStart";
          }
@@ -553,7 +564,7 @@ void DataEntry::displayData() {
          break;
      case 6: break;//KEY_F(6)
      case 7: //KEY_F(7)     
-         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, 78, "Exit", COLOR_PAIR(1), KEY_F(7)) == true) {
+         if (DataEntry::confirmAction(winMsgArea, winFullScreen, 2, 2, winCols, "Exit", COLOR_PAIR(1), KEY_F(7), debugFile) == true) {
              result = "Exit";
          }
          else {

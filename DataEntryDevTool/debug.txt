@@ -1,1 +1,26 @@
 before  While 
+inside AcceptInput 
+inside doFunctionKeys
+inside AcceptInput 
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+inside AcceptInput 
+KEY_ENTER index 2 field.getFieldValue().c_str() = Garwood                       
+inside AcceptInput 
+KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
+inside AcceptInput 
+inside doFunctionKeys
+KEY_UP
+index = 3 tempnam = Salary tempval 100.00
+inside AcceptInput 
+KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
+inside AcceptInput 
+KEY_ENTER index 4 field.getFieldValue().c_str() =          
+inside AcceptInput 
+inside doFunctionKeys
+KEY_UP
+index = 4 tempnam = Phone tempval 
+inside AcceptInput 
+inside doFunctionKeys
+KEY_UP
+index = 3 tempnam = Salary tempval 100.00
+inside AcceptInput 
