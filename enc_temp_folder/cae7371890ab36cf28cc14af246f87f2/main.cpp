@@ -1,4 +1,4 @@
-// Version: 6.28.24.09.24
+// Version: 6.21.24.16.05
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -230,7 +230,8 @@ RecordEntryStart:
         if (Result == "Error")
             goto FunctionKeyError;
         if (Result == "TryReadRecord") {
-            
+            // condition is set in doFunctionKeys
+            //condition = fieldNames[0] + " = \'" + fields[0].getFieldValue() + "\'";
             Result = "";
             AddingNew = false;
             EditingRecord = false;

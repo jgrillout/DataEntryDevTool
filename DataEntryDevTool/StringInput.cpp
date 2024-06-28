@@ -1,4 +1,4 @@
-//  Version: 6.21.24.16.05
+//  Version: 6.28.24.09.24
 // File: StringInput.cpp
 #pragma once
 #include "DataEntry.h"
@@ -229,10 +229,9 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile) {
 
     //traceoff();
     if (quit == true) {
-        dataEntry.field_value = EDIT$;
-        inputResult = EDIT$;
-        inputAction = Action;       
-        // indicates a funtion was  pressed and inputAction indicates which one
+        dataEntry.setFieldValue(EDIT$);    
+        dataEntry.setInputKeyPressed(Action);             
+        // indicates a funtion was  pressed and InputKeyPressed indicates which one
             return true;
         
     }
@@ -240,9 +239,11 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile) {
 exitField:
     //Action = "exitField_NOT_KEY_F";
    // wrefresh(saveWin);    
-    dataEntry.field_value = EDIT$;
-    inputResult = EDIT$;
-    inputAction = Action;    
+
+    
+    dataEntry.setFieldValue(EDIT$);
+    dataEntry.setInputKeyPressed(Action);
+    
     //wattroff(saveWin, COLOR_PAIR(2));
     //wattron(saveWin, COLOR_PAIR(3));
     //wrefresh(saveWin);

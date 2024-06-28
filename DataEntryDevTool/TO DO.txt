@@ -1,14 +1,12 @@
-adjust row for message window
-rename row to field_row & col to field_col
 
+-- FIX SCREEN CLEAR ON F4 SAVE
+1. rename row to fieldRow & col to fieldCol
+2. make varable naming style consistent for camel case
+3. add  date input validation 
 
-1. how to handle entry of decimal point? prevent decimal if already exits?
-
-3. add  date input capability
-4. add  masked input capability
-5. logic to test if db already exists and if to overwrite and export to text file
-6. in certain cases(if field is blank) the up arrow leaves field in reverse
-7. add ability to specify the order by in selectRows
+5. logic to test if db already exists and if to overwrite and export to text file?
+6. add ability to specify the order by in selectRows
+7. Other misc cleanup
 
 
 

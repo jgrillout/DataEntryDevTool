@@ -1,4 +1,4 @@
-// Version: 6.21.24.16.05
+// Version: 6.28.24.09.24
 // File: NumericInput.cpp
 #pragma once
 #include "DataEntry.h" 
@@ -16,8 +16,7 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
     int saveColumn = dataEntry.getFieldColumn();
     int rows = saveWin->_maxy;
     int cols = saveWin->_maxx;
-    //std::string reverseInput = "";
-    //bool edit = false;
+    
     int leftSize = 0;
     int rightSize = 0;
 
@@ -212,10 +211,9 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
         displayRightToLeft(saveWin, input, saveRow, saveColumn, saveLen);
     }
     if (quit == true) {
-        //std::reverse(input.begin(), input.end());
-        inputResult = input;
-        dataEntry.setFieldValue(inputResult);//??
-        inputAction = Action;
+        //std::reverse(input.begin(), input.end());        
+        dataEntry.setFieldValue(input);//??
+        dataEntry.setInputKeyPressed(Action);
         wattroff(saveWin, COLOR_PAIR(2));
         wattron(saveWin, COLOR_PAIR(3));
         wrefresh(saveWin);
@@ -236,9 +234,11 @@ exitField:
     //    std::reverse(input.begin(), input.end()); //??
     //    inputResult = input;
     //}
-    inputResult = input;
-    dataEntry.setFieldValue(inputResult);
-    inputAction = Action;
+    //inputResult = input;
+    //dataEntry.setFieldValue(inputResult);
+
+    dataEntry.setFieldValue(input);
+    dataEntry.setInputKeyPressed(Action);
 
     dataEntry.displayData();
 

@@ -45,9 +45,9 @@
     </field>  
     <field>
         <name>Phone</name>
-        <type>STRING</type>
-        <mask>(###) ###-####</mask>
-        <length>9</length>
+        <type>MASKED</type>
+        <mask>(999) 999-9999</mask>
+        <length>14</length>
         <row>5</row>
         <col>15</col>
         <defaultValue></defaultValue>
@@ -67,8 +67,8 @@
     </field>  
 	<field>
         <name>FirstSaleDate</name>
-        <type>STRING</type>
-        <mask></mask>
+        <type>DATE</type>
+        <mask>99/99/9999</mask>
         <length>10</length>
         <row>7</row>
         <col>20</col>

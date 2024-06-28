@@ -155,6 +155,7 @@
     <ClCompile Include="DataEntry.cpp" />
     <ClCompile Include="ISAMWrapperLib.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MaskedInput.cpp" />
     <ClCompile Include="NumericInput.cpp" />
     <ClCompile Include="StringInput.cpp" />
   </ItemGroup>
