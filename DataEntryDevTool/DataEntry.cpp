@@ -1,19 +1,16 @@
-//  Version: 6.28.24.09.24
+//  Version: 7.2.24.10.06
 // File: DataEntry.cpp
 #include "DataEntry.h"
 // Constructor implementation
-DataEntry::DataEntry(WINDOW* win, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text)
-    : win(win), field_name(field_name),fieldtype(fieldtype), field_mask(field_mask),len(len), row(row), field_column(field_column), field_value(field_value), label_column(label_column), label_text(label_text) {}
+DataEntry::DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea,std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text,std::string allowedChoices="", std::string choiceDescriptions="")
+    : winFullScreen(winFullScreen), winMsgArea(winMsgArea), field_name(field_name),fieldtype(fieldtype), field_mask(field_mask),len(len), row(row), field_column(field_column), field_value(field_value), label_column(label_column), label_text(label_text),allowedChoices(allowedChoices), choiceDescriptions(choiceDescriptions){}
 
 
 void DataEntry::displayLabels() {
-    //std::string myString = label_text.c_str();
-    //// remove quotes in labels if any
-    //myString.erase(std::remove(myString.begin(), myString.end(), '\"'), myString.end());
-    //setLabelText(myString);
-    wattron(win, COLOR_PAIR(3));
-    mvwprintw(win, row, label_column, label_text.c_str());
-    wrefresh(win);
+    
+    wattron(winFullScreen, COLOR_PAIR(3));
+    mvwprintw(winFullScreen, row, label_column, label_text.c_str());
+    wrefresh(winFullScreen);
 }
 
 void DataEntry::displayData() {
@@ -24,28 +21,28 @@ void DataEntry::displayData() {
     std::string myStringNoSpaces = removeLeadingSpaces(myString);
     setFieldValue(myStringNoSpaces);
     
-    wattron(win, COLOR_PAIR(3));
+    wattron(winFullScreen, COLOR_PAIR(3));
     int test = DataEntry::stringSwitchNumber(getFieldType());
 
     if (test == 18) {//numeric field
         std::string myStringPaddedRight = rightJustifyString(myString, len);
-        mvwprintw(win, row, field_column, myStringPaddedRight.c_str());
+        mvwprintw(winFullScreen, row, field_column, myStringPaddedRight.c_str());
     }
     else
     {
         std::string myStringPaddedLeft = myString;
         myStringPaddedLeft.resize(len, ' ');
-        mvwprintw(win, row, field_column, myStringPaddedLeft.c_str());
+        mvwprintw(winFullScreen, row, field_column, myStringPaddedLeft.c_str());
 
     }
-    wrefresh(win);
+    wrefresh(winFullScreen);
 }
-bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstream& debugFile) {
+bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW* winMsgArea,std::ofstream& debugFile) {
 
-    debugFile << "inside AcceptInput " << std::endl;
-    WINDOW* saveWin = dataEntry.getWin();
+    
+    WINDOW* savewinFullScreen = winFullScreen;// dataEntry.getwinFullScreen();
     int winRows = 0, winCols = 0;
-    getmaxyx(saveWin, winRows, winCols);
+    getmaxyx(savewinFullScreen, winRows, winCols);
     bool result = false;
     bool validDate = false;
     bool fKey = false;                
@@ -56,7 +53,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
     switch (test)
     {
     case 17: //STRING:
-        fKey = stringInput(dataEntry, debugFile);
+        fKey = stringInput(dataEntry, debugFile,test);
         break;
 
     case 18: //NUMERIC:
@@ -65,29 +62,32 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
     case 19: //MASKED:
         fKey = MaskedInput(dataEntry, debugFile);
         break;
-    case 23: //DATE:
-        //bool fKey = false;//jg 6/27
-        //jg 6/27
-        //int winRows = 0, winCols = 0;//jg 6/26
-        //getmaxyx(stdscr, winRows, winCols);//jg 6/26
+    case 23: //DATE:       
         do {
             fKey = MaskedInput(dataEntry, debugFile);
             validDate = isValidDate(dataEntry.field_value.c_str());
             if (!validDate) {
                 std::string msg = "Invalid Date";
-                fKey=DataEntry::errMsg(winMsgArea, 2, winCols, msg, debugFile, inputAction);
+                fKey = DataEntry::errMsg(winMsgArea, 2, winCols, msg, debugFile, inputAction);
                 if (fKey == true && inputAction == "KEY_F(5)" || inputAction == "KEY_F(7)")
                     break;
+                hideWindow(winMsgArea, winFullScreen);
+ 
             }
-            } while (validDate == false);
+        } while (validDate == false);
 
-            if (validDate == true) {
-                std::string temp = dataEntry.field_value.c_str();
-                dataEntry.setFieldValue(temp);
-            }
-            break;
+        if (validDate == true) {
+            std::string temp = dataEntry.field_value.c_str();
+            dataEntry.setFieldValue(temp);
         }
-
+        break;
+    case 24: //CHOICE:
+        std::string temp = dataEntry.choiceDescriptions;
+        PrintInMiddle(winMsgArea, 1, 1, 79, temp, COLOR_PAIR(3), debugFile);
+            fKey = stringInput(dataEntry, debugFile, test);            
+            hideWindow(winMsgArea, savewinFullScreen);  
+        break;
+    }
     return fKey;
 
     }
@@ -116,7 +116,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
         return day <= daysInMonth[month - 1];
     }
 
-    bool DataEntry::SetupFields(WINDOW * win, std::vector<DataEntry>&fields, std::ifstream & xmlFile) {
+    bool DataEntry::SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea, std::vector<DataEntry>& fields, std::ifstream& xmlFile) {
 
         std::string field_name = "";
         std::string fieldtype = "";
@@ -127,6 +127,9 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
         std::string defaultValue = "";
         int label_column = 0;
         std::string label_text = "";
+        std::string AllowedChoices = "";
+        std::string ChoiceDescriptions = "";
+
         if (xmlFile.is_open()) {
             std::string line;
             std::getline(xmlFile, line);
@@ -140,9 +143,9 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
             if (line.find("</field>") != std::string::npos) {
                 //were at the end of the field XML element.so add the field to the vector
                 if (!field_name.empty()) // just in case
-                    fields.emplace_back(win, field_name, fieldtype, field_mask, len, row, col, defaultValue, label_column, label_text);
-            }
 
+                    fields.emplace_back(winFullScreen, winMsgArea, field_name, fieldtype, field_mask, len, row, col, defaultValue, label_column, label_text, AllowedChoices, ChoiceDescriptions);
+            }
             std::string tag, value;
             // Find the positions of the opening and closing angle brackets
             size_t start_pos = line.find("<");
@@ -168,6 +171,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
                         value = value.substr(0, value_end_pos);
                     }
                 }
+
                 if (tag == "name") {
                     field_name = DataEntry::removeLeadingSpaces(value);
                     // remove double quote mark if any
@@ -176,8 +180,12 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
 
                 else if (tag == "type") fieldtype = value;
                 else if (tag == "mask") field_mask = value;
+
                 else if (tag == "length")  len = std::stoi(value);
+
+
                 else if (tag == "row")  row = std::stoi(value);
+
                 else if (tag == "col")  col = std::stoi(value);
                 else if (tag == "defaultValue") {
                     defaultValue = DataEntry::removeLeadingSpaces(value);
@@ -193,11 +201,26 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
                     label_text.erase(std::remove(label_text.begin(), label_text.end(), '\"'), label_text.end());
 
                 }
+                else if (tag == "AllowedChoices") {
+
+                    AllowedChoices = DataEntry::removeLeadingSpaces(value);
+                    // remove double quote mark if any
+                    AllowedChoices.erase(std::remove(AllowedChoices.begin(), AllowedChoices.end(), '\"'), AllowedChoices.end());
+
+                }
+                else if (tag == "ChoiceDescriptions") {
+
+                    ChoiceDescriptions = DataEntry::removeLeadingSpaces(value);
+                    // remove double quote mark if any
+                     ChoiceDescriptions.erase(std::remove(ChoiceDescriptions.begin(), ChoiceDescriptions.end(), '\"'), ChoiceDescriptions.end());
+
+                }
 
             }
         }
         return true;
     }
+
 
 
 
@@ -354,6 +377,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
      //wrefresh(msgwin);
      ////wrefresh(fullwin);
      ////refresh();
+    
      // indicates a funtion was  pressed and inputAction indicates which one
      if (inputAction == "KEY_ENTER")
          return false;
@@ -363,14 +387,14 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
  }
  void DataEntry::PrintInMiddle(WINDOW* win, int startrow, int startcol, int width, std::string& msg, chtype color, std::ofstream& debugFile)
  {
-     int outrow=0, outcol=0;
-     debugFile << " inside PrintInMiddle" << std::endl;
-     debugFile << " startrow = " << startrow << " startcol " << startcol <<" width " << width << std::endl;
-     debugFile << " before FindMiddle" << std::endl;
-     FindMiddle(win, startrow, startcol, outrow, outcol, width, msg);
-     debugFile << " after FindMiddle" << std::endl;
-     debugFile << " outrow = " << outrow << " outcol " << outcol << " width " << width << std::endl;
+     if (win == NULL)
+         win = stdscr;
+     
+     width=getmaxx(win);
 
+     int outrow=0, outcol=0;     
+     FindMiddle(win, startrow, startcol, outrow, outcol, width, msg);
+    
      mvwprintw(win, outrow, outcol, "%s", msg.c_str());
      wrefresh(win);
 
@@ -388,6 +412,8 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
          win = stdscr;
      //getyx(win, row, col);
      getmaxyx(win, row, col);
+     if (width==0)
+        width = col;
      if (startcol != 0)
          col = startcol;
      if (startrow != 0)
@@ -414,6 +440,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
 
      wmove(win, startrow, startcol);
      wclrtoeol(win);
+     box(win, 0, 0);
      int outrow, outcol;
 
      FindMiddle(win, startrow, startcol, outrow, outcol, width, prompt);
@@ -428,8 +455,10 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
 
      wmove(win, outrow, outcol);
      //wclrtoeol(win);
+
      werase(win);
      wrefresh(win);
+     noecho();
      if (input == 'y' || input == 'Y')
      {
          return "Yes";
@@ -450,6 +479,8 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
 
      wattron(msgwin, COLOR_PAIR(3));
      wmove(msgwin, startrow, startcol);
+     wclrtoeol(msgwin);
+     wmove(msgwin, startrow-1, startcol);
      wclrtoeol(msgwin);
      //refresh();
      switch (keyToPress)
@@ -509,14 +540,10 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
  }
  
 
- std::string result = "";
  std::string DataEntry::doFunctionKeys(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew,  ISAMWrapperLib& lib,  std::string& condition, std::vector<DataEntry>& fields, std::ofstream& debugFile, std::string inputAction) {
-     debugFile << "inside doFunctionKeys" << std::endl;
      std::string result = "";
      int index = 0;
-    /* int mainHeight = 24;
-     int mainWidth = 80;*/
-
+//TODO: find way so these are not hard-coded
      int lookupHeight = 10;
      int lookupWidth = 50;
      int lookupStartY = 5;
@@ -541,7 +568,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
      case 1: break;//KEY_F(1)                
      
      case 2: //KEY_F2
-        
+         
          tupleVectordata = lib.selectRows(tbl, "");
          // Transform vector of tuples into vector of pairs
          pairVectordata = DataEntry::transformVector(tupleVectordata);
@@ -639,6 +666,14 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
                  result = "RecordNotFound";
          }
      }
+     // very weird bug i had to turn reverse on so the box wouln't be in reverse
+
+     wattron(winFullScreen, A_REVERSE);     
+     wrefresh(winFullScreen);
+     box(winFullScreen, 0, 0);
+     wrefresh(winFullScreen);
+     // very weird bug now turn off since it shouldn't need to be on anyway
+     wattroff(winFullScreen, A_REVERSE);
      return result;
  } 
  int DataEntry::stringSwitchNumber(const std::string& key) {
@@ -667,7 +702,8 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
         {"UPPERCASE",20},
         {"DIGITS", 21},
         {"QUESTION",22},
-        {"DATE",23}   
+        {"DATE",23},   
+        {"CHOICE",24}
     };
 
     // Check if the key exists in the map
@@ -690,7 +726,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
      std::string line;
      bool dataDictionaryFound = false;
      bool fieldOpenTagFound = false;
-     std::vector<std::string> fieldTags = { "name", "type", "mask", "length", "row", "col", "defaultValue", "label_column", "label_text" };
+     std::vector<std::string> fieldTags = { "name", "type", "mask", "length", "row", "col", "defaultValue", "label_column", "label_text","AllowedChoices","ChoiceDescriptions"};
      //int x = 0;
      while (std::getline(xmlFile, line)) {
          std::string msg = "line = "+line;
@@ -909,7 +945,8 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
 }
  void DataEntry::displayMask(DataEntry& dataEntry, std::string& input,std::ofstream& debugFile) {
 
-     WINDOW* saveWin = dataEntry.getWin();
+     //WINDOW* winFullScreen, WINDOW* winMsgArea
+     WINDOW* savewinFullScreen = dataEntry.getwinFullScreen();
      int saveRow = dataEntry.getRow();
      int saveColumn = dataEntry.getFieldColumn();
      //std::string input = dataEntry.getFieldValue();
@@ -917,21 +954,21 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
      std::string mask = dataEntry.getMask();
      mask.erase(std::remove(mask.begin(), mask.end(), '\"'));
      std::string displayMaskStr = generateDisplayMask(mask);
-     mvwprintw(saveWin, saveRow, saveColumn, "%s", displayMaskStr.c_str()); // Print the display mask with spaces instead of '9'
-     //wrefresh(saveWin);
+     mvwprintw(savewinFullScreen, saveRow, saveColumn, "%s", displayMaskStr.c_str()); // Print the display mask with spaces instead of '9'
+     //wrefresh(savewinFullScreen);
      // Display input characters in the appropriate positions based on the mask
      for (int i = 0, j = 0; i < mask.size(); ++i) {
-         wrefresh(saveWin);
+         wrefresh(savewinFullScreen);
         
          if (mask[i] == '9' && j < input.size()) {
-             mvwaddch(saveWin, saveRow, saveColumn+i, input[j++]); // Display input character
+             mvwaddch(savewinFullScreen, saveRow, saveColumn+i, input[j++]); // Display input character
          }
          else if (mask[i] != '9') {
-             mvwaddch(saveWin, saveRow, saveColumn +i, mask[i]); // Display mask character
+             mvwaddch(savewinFullScreen, saveRow, saveColumn +i, mask[i]); // Display mask character
          }
      }
 
-     wrefresh(saveWin); // Refresh window to show changes
+     wrefresh(savewinFullScreen); // Refresh window to show changes
  }
 
  // Function to generate the initial display mask string
@@ -966,19 +1003,37 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstre
          });
      return result;
  }
-void DataEntry::inspectMask(const std::string& format, int& leftSize, int& rightSize) {
-    size_t decimalPos = format.find('.');
+ void DataEntry::inspectMask(const std::string& format, int& leftSize, int& rightSize) {
+     size_t decimalPos = format.find('.');
 
-    if (decimalPos != std::string::npos) {
-        leftSize = decimalPos;
-        rightSize = format.size() - decimalPos - 1;
-    }
-    else {
-        // If no decimal point is found, all characters are considered to the left of the decimal
-        leftSize = format.size();
-        rightSize = 0;
-    }
-}
+     if (decimalPos != std::string::npos) {
+         leftSize = decimalPos;
+         rightSize = format.size() - decimalPos - 1;
+     }
+     else {
+         // If no decimal point is found, all characters are considered to the left of the decimal
+         leftSize = format.size();
+         rightSize = 0;
+     }
+ }
+ void DataEntry::hideWindow(WINDOW* win,WINDOW* winfullScreen) {
+     if (win != nullptr) {
+         werase(win);  // Clear the window
+         wrefresh(win); // Refresh the window to update the display
+         if (winfullScreen != nullptr) {
+             touchwin(winfullScreen);
+             wrefresh(winfullScreen);
+         }
+
+     }
+
+ }
+
+
+
+
+
+
 
  
 

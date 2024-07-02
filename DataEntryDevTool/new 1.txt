@@ -1,8 +1,8 @@
-//  Version: 7.2.24.10.06
+//  Version: 6.28.24.09.24
 // File: StringInput.cpp
 #pragma once
 #include "DataEntry.h"
-bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int test) {
+bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile) {
     /*Note: parameter names are diffent then the declartions so they match
     the names of code i borrowed from a business BASIC program GENINPUT.PUB*/
     std::string X$ = "";
@@ -10,12 +10,12 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
     std::string Action = "";
     std::string before = "";
     std::string after = "";
-    WINDOW* savewinFullScreen = dataEntry.getwinFullScreen();
+    WINDOW* saveWin = dataEntry.getWin();
     size_t saveLen = dataEntry.getLength();
     int saveRow = dataEntry.getRow();
     int saveColumn = dataEntry.getFieldColumn();
-    int rows = savewinFullScreen->_maxy;
-    int cols = savewinFullScreen->_maxx;
+    int rows = saveWin->_maxy; 
+    int cols = saveWin->_maxx;
     int POS = 0;
     int SAVEPOS = 0;//size_t
     bool MASKED = false;
@@ -33,27 +33,27 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
     POS = EDIT$.find_last_not_of(' ') + 1;
     SAVEPOS = POS;   
     // Enable keypad mode to capture function keys
-    keypad(savewinFullScreen, TRUE);
+    keypad(saveWin, TRUE);
     int c=0;
     bool quit = false;    
-    //wattron(savewinFullScreen, COLOR_PAIR(2));
+    //wattron(saveWin, COLOR_PAIR(2));
 
-    mvwprintw(savewinFullScreen, saveRow, saveColumn, EDIT$.c_str());
+    mvwprintw(saveWin, saveRow, saveColumn, EDIT$.c_str());
 
     //wattroff(saveWin, COLOR_PAIR(2));
     //wrefresh(saveWin);
     // Capture user input until Enter key is pressed
     while (quit != true) {
-        wattron(savewinFullScreen, COLOR_PAIR(2));
-        //wrefresh(savewinFullScreen);
-        mvwprintw(savewinFullScreen, saveRow, saveColumn, EDIT$.c_str());
-        wrefresh(savewinFullScreen);
+        wattron(saveWin, COLOR_PAIR(2));
+        //wrefresh(saveWin);
+        mvwprintw(saveWin, saveRow, saveColumn, EDIT$.c_str());
+        wrefresh(saveWin);
         //wattroff(saveWin, COLOR_PAIR(2));
         //wattron(saveWin, COLOR_PAIR(3));
         //wrefresh(saveWin);
 
 //GETKEY:
-        c = wgetch(savewinFullScreen);
+        c = wgetch(saveWin);
         std::string action = keyname(c);
 #pragma region //start of switch
         switch (c)
@@ -89,27 +89,27 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
             break;
         case KEY_F(7):
             Action = "KEY_F(7)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(8):
             Action = "KEY_F(8)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(9):
             Action = "KEY_F(9)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(10):
             Action = "KEY_F(10)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_UP:
             Action = "KEY_UP";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
 // This is the core logic that handles the editing of the string input field 
@@ -146,13 +146,13 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
         case 331: //INSERT
             INSERT = !INSERT;
             if (INSERT == true) {
-                wattron(savewinFullScreen, COLOR_PAIR(2));
-                mvwprintw(savewinFullScreen, rows - 2, cols - 8, "Insert");
+                wattron(saveWin, COLOR_PAIR(2));
+                mvwprintw(saveWin, rows - 2, cols - 8, "Insert");
             }
             else {
-                wattron(savewinFullScreen, COLOR_PAIR(3));
-                mvwprintw(savewinFullScreen, rows - 2, cols - 8, "       ");
-                wattron(savewinFullScreen, COLOR_PAIR(2));
+                wattron(saveWin, COLOR_PAIR(3));
+                mvwprintw(saveWin, rows - 2, cols - 8, "       ");
+                wattron(saveWin, COLOR_PAIR(2));
             }
             break;
         case 8:// Handle backspace
@@ -182,7 +182,7 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
             }
             else {
                 Action = "KEY_NOT";// deal with keys i haven't planned on handling
-                wrefresh(savewinFullScreen);
+                wrefresh(saveWin);
                 quit = true;
                 break;
             }
@@ -194,13 +194,8 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
            
             if (std::isprint(c)) {
                 char character = static_cast<char>(c);
-                if (test == 24) {// input type is CHOICE
-                    
-                    if (dataEntry.allowedChoices.find(character) == std::string::npos) {
-                        beep();
-                        break;
-                    }
-                }
+                /*if (allowed(dataEntry.getFieldType(), character, EDIT$) == false)
+                    break;*/
 
                 std::string chString(1, character);
 
@@ -226,7 +221,7 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
                     POS = saveLen;
                 }
 
-                wrefresh(savewinFullScreen);
+                wrefresh(saveWin);
             }
         }
 #pragma endregion //end of switch

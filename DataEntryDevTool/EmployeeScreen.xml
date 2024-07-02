@@ -8,7 +8,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Employee Id</label_text>       
+        <label_text>Employee Id</label_text>    
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
     <field>
         <name>Name</name>
@@ -19,7 +21,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Name</label_text>       
+        <label_text>Name</label_text>     
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
     <field>
         <name>Address</name>
@@ -30,7 +34,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Address</label_text>       
+        <label_text>Address</label_text> 
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
     <field>
         <name>Salary</name>
@@ -41,7 +47,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Salary</label_text>       
+        <label_text>Salary</label_text>  
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
     <field>
         <name>Phone</name>
@@ -52,7 +60,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Phone</label_text>       
+        <label_text>Phone</label_text>     
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
     <field>
         <name>Email</name>
@@ -63,7 +73,9 @@
         <col>15</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>Email</label_text>       
+        <label_text>Email</label_text>    
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
     </field>  
 	<field>
         <name>FirstSaleDate</name>
@@ -74,6 +86,21 @@
         <col>20</col>
         <defaultValue></defaultValue>
         <label_column>1</label_column>            
-        <label_text>First Sale Date</label_text>       
+        <label_text>First Sale Date</label_text>  
+		<AllowedChoices></AllowedChoices>
+		<ChoiceDescriptions></ChoiceDescriptions>		
+    </field>  	
+	<field>
+        <name>Marital Status</name>
+        <type>CHOICE</type>
+        <mask></mask>
+        <length>1</length>
+        <row>8</row>
+        <col>20</col>
+        <defaultValue></defaultValue>
+        <label_column>1</label_column>            
+        <label_text>Marital Status</label_text>  
+		<AllowedChoices>MSD</AllowedChoices>
+		<ChoiceDescriptions>Married, Single, Divorced</ChoiceDescriptions>
     </field>  	
 </dataDictionary>

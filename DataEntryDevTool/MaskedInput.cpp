@@ -10,18 +10,18 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
 
     std::string mask = dataEntry.getMask();
     mask.erase(std::remove(mask.begin(), mask.end(), '\"'));
-    WINDOW* saveWin = dataEntry.getWin();
+    WINDOW* savewinFullScreen = dataEntry.getwinFullScreen();
     size_t saveLen = dataEntry.getLength();
     int saveRow = dataEntry.getRow();
     int saveColumn = dataEntry.getFieldColumn();
-    int rows = saveWin->_maxy;
-    int cols = saveWin->_maxx;
-    keypad(saveWin, TRUE); // Enable arrow keys for win
+    int rows = savewinFullScreen->_maxy;
+    int cols = savewinFullScreen->_maxx;
+    keypad(savewinFullScreen, TRUE); // Enable arrow keys for win
     //std::string mask = "(999) 999-9999";
     //std::string mask = "99/99/9999";
     std::string displayMaskStr = generateDisplayMask(mask);
-    wattroff(saveWin, COLOR_PAIR(3));
-    wattron(saveWin, COLOR_PAIR(2));
+    wattroff(savewinFullScreen, COLOR_PAIR(3));
+    wattron(savewinFullScreen, COLOR_PAIR(2));
     displayMask(dataEntry, input, debugFile);
 
     // Set cursor to the first '9' position in the mask
@@ -29,8 +29,8 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
     while (pos < mask.size() && mask[pos] != '9') {
         ++pos;
     }
-    wmove(saveWin, saveRow, saveColumn+pos);
-    wrefresh(saveWin);
+    wmove(savewinFullScreen, saveRow, saveColumn+pos);
+    wrefresh(savewinFullScreen);
 
     
     int ch = 0;
@@ -42,18 +42,18 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
     bool GotoRestart = false;
     bool firstpass = true;
     std::string Action = "";
-    wattron(saveWin, COLOR_PAIR(3));
-    wrefresh(saveWin);
+    wattron(savewinFullScreen, COLOR_PAIR(3));
+    wrefresh(savewinFullScreen);
     noecho(); // Disable echoing of characters
-    wrefresh(saveWin);
+    wrefresh(savewinFullScreen);
     while (quit != true)
     {
 
-        wattroff(saveWin, COLOR_PAIR(3));
-        wattron(saveWin, COLOR_PAIR(2));
-        wrefresh(saveWin);
+        wattroff(savewinFullScreen, COLOR_PAIR(3));
+        wattron(savewinFullScreen, COLOR_PAIR(2));
+        wrefresh(savewinFullScreen);
 
-        ch = wgetch(saveWin);
+        ch = wgetch(savewinFullScreen);
 
 #pragma region //start of switch
         switch (ch)
@@ -90,27 +90,27 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
             break;
         case KEY_F(7):
             Action = "KEY_F(7)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(8):
             Action = "KEY_F(8)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(9):
             Action = "KEY_F(9)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(10):
             Action = "KEY_F(10)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_UP:
             Action = "KEY_UP";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             goto  exitField; //jrg
             break;
@@ -181,9 +181,9 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
 
                 displayMask(dataEntry, input, debugFile);
                 if (pos <= mask.size()) {
-                    wmove(saveWin, saveRow, saveColumn + pos ); // Move cursor to the next input position
+                    wmove(savewinFullScreen, saveRow, saveColumn + pos ); // Move cursor to the next input position
                 }
-                wrefresh(saveWin);
+                wrefresh(savewinFullScreen);
         }
     }
         
@@ -196,9 +196,9 @@ bool DataEntry::MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile)
         dataEntry.setFieldValue(inputResult);
         dataEntry.setFieldValue(input);
         dataEntry.setInputKeyPressed(Action);
-        wattroff(saveWin, COLOR_PAIR(2));
-        wattron(saveWin, COLOR_PAIR(3));
-        wrefresh(saveWin);
+        wattroff(savewinFullScreen, COLOR_PAIR(2));
+        wattron(savewinFullScreen, COLOR_PAIR(3));
+        wrefresh(savewinFullScreen);
         
         dataEntry.displayData(); //jg 6/27
         // true indicates a funtion was  pressed and InputKeyPressed indicates which one

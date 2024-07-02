@@ -1,4 +1,4 @@
-// Version: 6.28.24.09.24
+// Version: 7.2.24.10.06
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -51,20 +51,14 @@ int main(int argc, char* argv[]) {
 
     WINDOW* winFullScreen = newwin(stdscrRows, stdscrCols, 0, 0);
     assert(winFullScreen != NULL);
-    /*wattron(winFullScreen, COLOR_PAIR(3));
-    wbkgd(winFullScreen, COLOR_PAIR(3));
-    box(winFullScreen, ACS_VLINE, ACS_HLINE);*/
-    //wrefresh(winFullScreen);
-
 
     WINDOW* winFormArea = derwin(winFullScreen, stdscrRows -2, stdscrCols -2, 1, 1);
     assert(winFormArea != NULL);
     wattron(winFormArea, COLOR_PAIR(3));
-    wbkgd(winFormArea, COLOR_PAIR(3));
-    //wrefresh(winFormArea);
+    wbkgd(winFormArea, COLOR_PAIR(3));    
     keypad(winFormArea, TRUE);
 
-    WINDOW* winMsgArea = newwin(4, stdscrCols -2, stdscrRows-5, 1);
+    WINDOW* winMsgArea = newwin(4, stdscrCols -2, stdscrRows-4, 1);
     assert(winMsgArea != NULL);
     wattron(winMsgArea, COLOR_PAIR(3));
     wbkgd(winMsgArea, COLOR_PAIR(3));
@@ -74,7 +68,7 @@ int main(int argc, char* argv[]) {
     wrefresh(winMsgArea);
     wrefresh(winFormArea);
     wrefresh(winFullScreen);
-    std::vector<DataEntry> dummy;
+    
     if (DataEntry::validateXml(winFullScreen, winMsgArea, xmlFile)) {
 
         //std::string err="XML file is correctly formatted.";
@@ -97,7 +91,7 @@ int main(int argc, char* argv[]) {
     std::string temp = "";
 
     // Read screen data from the file and initialize DataEntry objects
-    if (DataEntry::SetupFields(winFormArea, fields, xmlFile) == false) {
+    if (DataEntry::SetupFields(winFullScreen,winFormArea, fields, xmlFile) == false) {
         delwin(winFormArea);
         endwin();
         //std::cout << "setup_fields failed " << std::endl;
@@ -115,7 +109,6 @@ int main(int argc, char* argv[]) {
     
     ISAMWrapperLib lib(dbname);
     lib.createTable(arg1, fieldNames);
-
 
     int rc = sqlite3_open(dbname.c_str(), &db);
     if (rc) {
@@ -162,20 +155,11 @@ RecordEntryStart:
     wattron(winFullScreen, COLOR_PAIR(3));
     wbkgd(winFullScreen, COLOR_PAIR(3));
     box(winFullScreen, ACS_VLINE, ACS_HLINE);
-    wattron(winFullScreen, A_REVERSE);
+    //wattron(winFullScreen, A_REVERSE);
     
     int functionKeyRow = stdscrRows - 2;
     int functionKeyCount = 5;
-    int functionKeygaps = 1;
-    // for spacing to look good, the length of  the text for the fuction key labels must be the same
-    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*2," F2 Lookup  ");   
-    functionKeygaps = stdscrCols / functionKeyCount;
-    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*1," F3  Delete ");
-    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*2,"  F4  Save  ");
-    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*3," F5 Restart ");
-    mvwprintw(winFullScreen, functionKeyRow, functionKeygaps*4,"  F7  Exit  ");
-    wattroff(winFullScreen, A_REVERSE);
-    wrefresh(winFullScreen);
+    
 
     bool firstTime = true, quit = false;
     bool EditingRecord = false, AddingNew = false;
@@ -193,16 +177,28 @@ RecordEntryStart:
     size_t  index = 0;
     std::vector<std::string>  fieldValues;
 
-
     debugFile << "before  While " << std::endl;
     while (index < fields.size()) {
     BeginField:
+        wattron(winFullScreen, A_REVERSE);
+        int functionKeyRow = stdscrRows - 2;
+        int functionKeyCount = 5;
 
+        int functionKeygaps = 1;
+        // for spacing to look good, the length of  the text for the fuction key labels must be the same
+        mvwprintw(winFullScreen, functionKeyRow, functionKeygaps * 2, " F2 Lookup  ");
+        functionKeygaps = stdscrCols / functionKeyCount;
+        mvwprintw(winFullScreen, functionKeyRow, functionKeygaps * 1, " F3  Delete ");
+        mvwprintw(winFullScreen, functionKeyRow, functionKeygaps * 2, "  F4  Save  ");
+        mvwprintw(winFullScreen, functionKeyRow, functionKeygaps * 3, " F5 Restart ");
+        mvwprintw(winFullScreen, functionKeyRow, functionKeygaps * 4, "  F7  Exit  ");
+        wattroff(winFullScreen, A_REVERSE);
+        wrefresh(winFullScreen);
         auto& field = fields[index];
 
         //**********ACCEPT INPUT ************
         std::string InputKeyPressed;
-        bool FunctionKey=field.AcceptInput(field,winMsgArea,debugFile);
+        bool FunctionKey=field.AcceptInput(field, winFullScreen,winMsgArea,debugFile);
         InputKeyPressed = field.getInputKeyPressed();
         if (!FunctionKey)
             goto notFunctionKey;
@@ -217,10 +213,7 @@ RecordEntryStart:
         }
         field.setFieldValue(temp);
         fieldValues.push_back(temp);
-        field.displayData();
-        /* std::string tempnam = field.getfieldName();
-         std::string tempval = field.getFieldValue();
-         debugFile << "index = " << index << " tempnam = " << tempnam << " tempval " << tempval << std::endl;*/
+        field.displayData();        
         wrefresh(winFormArea);
     functionKeys:
         Result = DataEntry::doFunctionKeys(winFullScreen, winMsgArea, arg1, AddingNew, lib, condition, fields, debugFile,InputKeyPressed);
@@ -415,9 +408,6 @@ RecordEntryStart:
             {
                 goto Exit;
             }
-        
-        
-    
     
  handleError:
         msg = "handleError occured";
@@ -440,6 +430,11 @@ Exit:
         //TODO: what memory clean up should be done?
         return 1;
 }
+
+
+
+
+
 
 
 

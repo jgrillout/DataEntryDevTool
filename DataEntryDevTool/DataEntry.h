@@ -1,4 +1,4 @@
-// Version: 6.28.24.09.24
+// Version: 7.2.24.10.06
 // File: DataEntry.h
 #pragma once
 #include "curses.h"
@@ -24,7 +24,8 @@ using DataTuple = std::tuple<std::string, std::string>;
 class DataEntry {
 
 private:
-	WINDOW* win;
+	WINDOW* winFullScreen;
+	WINDOW* winMsgArea;
 	std::string field_name;
 	std::string fieldtype;
 	std::string field_mask;
@@ -35,6 +36,8 @@ private:
 	int label_column;
 	std::string label_text;
 	std::string InputKeyPressed;
+	std::string allowedChoices;
+	std::string choiceDescriptions;
 	
 
 public:
@@ -46,13 +49,14 @@ public:
 	//static std::string InputKeyPressed;
 	static std::string numtest;
 	//static bool userTypedValue;
+	//WINDOW* winFullScreen;
+	//WINDOW* winMsgArea;
 	
-	
-	DataEntry(WINDOW* win, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text);
-	static bool AcceptInput(DataEntry& dataEntry, WINDOW* winMsgArea,std::ofstream& debugFile);
+	DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text, std::string allowedChoices, std::string choiceDescriptions);
+	static bool AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW* winMsgArea,std::ofstream& debugFile);
 	//---------cut from stringInput.h-------------------------------------------
-	static bool allowed(std::string type, char character, std::string EDIT$);
-	static bool stringInput(DataEntry& DataEntry, std::ofstream& debugFile);
+	//static bool allowed(std::string type, char character, std::string EDIT$);
+	static bool stringInput(DataEntry& DataEntry, std::ofstream& debugFile, int test);
 	static bool NumericInput(DataEntry& dataEntry,std::ofstream& debugFile);
 	static bool MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile);
 	static void displayRightToLeft(WINDOW* win, const std::string& input, int row, int col, int inputSize);
@@ -62,19 +66,16 @@ public:
 	static std::string combineInputWithMask(const std::string& mask, const std::string& input);
 	static std::string generateDisplayMask(const std::string& mask);
 	static bool validateXml(WINDOW* winFullScreen, WINDOW* winMsgArea, std::ifstream& xmlFile);
-	static bool SetupFields(WINDOW* win, std::vector<DataEntry>& fields, std::ifstream& inputFile);
+	static bool SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea,std::vector<DataEntry>& fields, std::ifstream& inputFile);
 	void displayData(); //const;    
 	void displayLabels();
 	static void parseCSVWithQuotes(std::string& line, std::vector<std::string>& tokens);
-	static std::string removeLeadingSpaces(const std::string& str);
-	
+	static std::string removeLeadingSpaces(const std::string& str);	
 	static void removeTrailingSpaces(std::string& str);
-	static std::string rightJustifyString(const std::string& str, int len);
+	static std::string rightJustifyString(const std::string& str, int len);	
 	static bool isValidDate(const std::string& date);
 	static std::vector<std::pair<std::string, std::string>> transformVector(const std::vector<DataTuple>& inputVector);
-
 	static void debugMsg(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string string1, std::string string2,int val);
-
 	static bool errMsg(WINDOW* win, int row, int col, std::string& msg, std::ofstream& debugFile, std::string inputAction);
 
 	static void FindMiddle(WINDOW* win, int startrow, int startcol, int& outrow, int& outcol, int width, std::string msg);
@@ -89,10 +90,14 @@ public:
 	static int stringSwitchNumber(const std::string& key);
 	static std::string displayLookupWindow(WINDOW* mainWindow, int lookupHeight, int lookupWidth, int lookupStartY, int lookupStartX, std::vector<std::pair<std::string, std::string>>& data, std::string condition);
 	static bool exportTableToCSV(sqlite3* db, const std::string& tableName, const std::string& fileName);
-	//static std::string tryreadRecord(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string tbl, bool AddingNew, ISAMWrapperLib& lib, const std::string condition, std::vector<DataEntry>& fields);
+	static void hideWindow(WINDOW* winMsgArea, WINDOW* winfullScreen);
 //Getters
-	WINDOW* getWin() const {
-		return win;
+	
+	WINDOW* getwinFullScreen() const {
+		return winFullScreen;
+	}
+	WINDOW* getwinMsgArea() const {
+		return winMsgArea;
 	}
 	std::string getfieldName() const {
 		return field_name;
@@ -114,14 +119,14 @@ public:
 
 	int getFieldColumn() const {
 		return field_column;
+	}	
+
+	int getLabelColumn() const {
+		return label_column;
 	}
 
 	std::string getFieldValue() const {
 		return field_value;
-	}
-
-	int getLabelColumn() const {
-		return label_column;
 	}
 
 	std::string getLabelText() const {
@@ -130,15 +135,27 @@ public:
 	std::string getInputKeyPressed() const {
 		return InputKeyPressed;
 	}
+	const std::string& getAllowedChoices() const {
+		return allowedChoices;
+	}
+
+	const std::string& getChoiceDescriptions() const {
+		return choiceDescriptions;
+	}
+
+	
 	// Setters
-	void setWin(WINDOW * newWin) {
-		win = newWin;
+	void setwinFullScreen(WINDOW * newWin) {
+		winFullScreen = newWin;
+	}
+	void setwinMsgArea(WINDOW* newwinMsgArea) {
+		winMsgArea = newwinMsgArea;
 	}
 	void setName(const std::string& newName) {
 		field_name = newName;
 
 	}
-	std::string setFieldType(std::string newFieldType) {
+	std::string setFieldType(std::string& newFieldType) {
 		fieldtype = newFieldType;
 	}
 	void setMask(const std::string& newMask) {
@@ -167,7 +184,12 @@ public:
 	void setInputKeyPressed(const std::string & newInputKeyPressed) {
 		InputKeyPressed = newInputKeyPressed;
 	}
-		
-	
-		
+	void setallowedChoices(const std::string & newallowedChoices) {
+		allowedChoices = newallowedChoices;
+	}
+
+	void setchoiceDescriptions(const std::string & newchoiceDescriptions) {
+		choiceDescriptions = newchoiceDescriptions;
+	}
 };
+

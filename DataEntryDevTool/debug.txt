@@ -1,68 +1,16 @@
 before  While 
-inside AcceptInput 
-inside doFunctionKeys
-inside AcceptInput 
-KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-inside AcceptInput 
-KEY_ENTER index 2 field.getFieldValue().c_str() = Garwood                       
-inside AcceptInput 
-KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
-inside AcceptInput 
-KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
-inside AcceptInput 
+KEY_ENTER index 0 field.getFieldValue().c_str() = TEST      
+KEY_ENTER index 1 field.getFieldValue().c_str() =                               
+KEY_ENTER index 2 field.getFieldValue().c_str() =                               
+KEY_ENTER index 3 field.getFieldValue().c_str() = 
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
 KEY_ENTER index 5 field.getFieldValue().c_str() =                               
-inside AcceptInput 
-KEY_ENTER index 6 field.getFieldValue().c_str() = 06/26/2024
-inside AcceptInput 
-KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-inside AcceptInput 
-KEY_ENTER index 2 field.getFieldValue().c_str() = Garwood                       
-inside AcceptInput 
-KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
-inside AcceptInput 
-KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
-inside AcceptInput 
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/01/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_ENTER index 1 field.getFieldValue().c_str() =                               
+KEY_ENTER index 2 field.getFieldValue().c_str() =                               
+KEY_ENTER index 3 field.getFieldValue().c_str() = 
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
 KEY_ENTER index 5 field.getFieldValue().c_str() =                               
-inside AcceptInput 
-KEY_ENTER index 6 field.getFieldValue().c_str() = 06/26/2024
-inside AcceptInput 
-KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-inside AcceptInput 
-KEY_ENTER index 2 field.getFieldValue().c_str() = Garwood                       
-inside AcceptInput 
-KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
-inside AcceptInput 
-KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
-inside AcceptInput 
-KEY_ENTER index 5 field.getFieldValue().c_str() =                               
-inside AcceptInput 
-KEY_ENTER index 6 field.getFieldValue().c_str() = 06/26/2024
-inside AcceptInput 
-inside doFunctionKeys
- inside PrintInMiddle
- startrow = 2 startcol 2 width 80
- before FindMiddle
- after FindMiddle
- outrow = 2 outcol 28 width 80
-before  While 
-inside AcceptInput 
-inside doFunctionKeys
-inside AcceptInput 
-inside doFunctionKeys
- inside PrintInMiddle
- startrow = 2 startcol 2 width 80
- before FindMiddle
- after FindMiddle
- outrow = 2 outcol 30 width 80
-before  While 
-inside AcceptInput 
-inside doFunctionKeys
-inside AcceptInput 
-inside doFunctionKeys
- inside PrintInMiddle
- startrow = 2 startcol 2 width 80
- before FindMiddle
- after FindMiddle
- outrow = 2 outcol 28 width 80
-before  While 
-inside AcceptInput 
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/01/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M

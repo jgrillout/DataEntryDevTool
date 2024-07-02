@@ -1,4 +1,4 @@
-// Version: 6.28.24.09.24
+// Version: 7.2.24.10.06
 // File: NumericInput.cpp
 #pragma once
 #include "DataEntry.h" 
@@ -10,12 +10,12 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
 
     std::string mask = dataEntry.getMask();
     mask.erase(std::remove(mask.begin(), mask.end(), '\"'));
-    WINDOW* saveWin = dataEntry.getWin();
+    WINDOW* savewinFullScreen = dataEntry.getwinFullScreen();
     size_t saveLen = dataEntry.getLength();
     int saveRow = dataEntry.getRow();
     int saveColumn = dataEntry.getFieldColumn();
-    int rows = saveWin->_maxy;
-    int cols = saveWin->_maxx;
+    int rows = savewinFullScreen->_maxy;
+    int cols = savewinFullScreen->_maxx;
     
     int leftSize = 0;
     int rightSize = 0;
@@ -23,7 +23,7 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
     inspectMask(mask, leftSize, rightSize);
     
     
-    displayRightToLeft(saveWin, input, saveRow, saveColumn, saveLen);
+    displayRightToLeft(savewinFullScreen, input, saveRow, saveColumn, saveLen);
 
 //Restart:
 //    dataEntry.setFieldValue(input);
@@ -42,16 +42,16 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
     bool hasDecimalPoint = false;
     bool firstpass = true;
     std::string Action = "";
-    wattron(saveWin, COLOR_PAIR(3));
-    wrefresh(saveWin);
+    wattron(savewinFullScreen, COLOR_PAIR(3));
+    wrefresh(savewinFullScreen);
     noecho(); // Disable echoing of characters
-    wrefresh(saveWin);
+    wrefresh(savewinFullScreen);
     while (quit != true)
     {
         //jrg
-        wattroff(saveWin, COLOR_PAIR(3));
-        wattron(saveWin, COLOR_PAIR(2));
-        wrefresh(saveWin);
+        wattroff(savewinFullScreen, COLOR_PAIR(3));
+        wattron(savewinFullScreen, COLOR_PAIR(2));
+        wrefresh(savewinFullScreen);
 
         //if (firstpass == true) {
         //    int inputSize = input.size(); // Size of the initial value
@@ -68,7 +68,7 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
 
 
         
-        ch = wgetch(saveWin);
+        ch = wgetch(savewinFullScreen);
 
 #pragma region //start of switch
         switch (ch)
@@ -105,27 +105,27 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
             break;
         case KEY_F(7):
             Action = "KEY_F(7)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(8):
             Action = "KEY_F(8)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(9):
             Action = "KEY_F(9)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_F(10):
             Action = "KEY_F(10)";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             break;
         case KEY_UP:
             Action = "KEY_UP";
-            wrefresh(saveWin);
+            wrefresh(savewinFullScreen);
             quit = true;
             goto  exitField; //jrg
             break;
@@ -208,15 +208,15 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
         //mvwprintw(saveWin, saveRow, saveColumn, blanks.c_str());
         //wrefresh(saveWin);
 
-        displayRightToLeft(saveWin, input, saveRow, saveColumn, saveLen);
+        displayRightToLeft(savewinFullScreen, input, saveRow, saveColumn, saveLen);
     }
     if (quit == true) {
         //std::reverse(input.begin(), input.end());        
         dataEntry.setFieldValue(input);//??
         dataEntry.setInputKeyPressed(Action);
-        wattroff(saveWin, COLOR_PAIR(2));
-        wattron(saveWin, COLOR_PAIR(3));
-        wrefresh(saveWin);
+        wattroff(savewinFullScreen, COLOR_PAIR(2));
+        wattron(savewinFullScreen, COLOR_PAIR(3));
+        wrefresh(savewinFullScreen);
         // indicates a funtion was  pressed and inputAction indicates which one
         return true;
 

@@ -1,12 +1,14 @@
-
--- FIX SCREEN CLEAR ON F4 SAVE
+-- FIX F2 WORKING ON ALL FIELDS
+0. add more input types
 1. rename row to fieldRow & col to fieldCol
 2. make varable naming style consistent for camel case
-3. add  date input validation 
+
 
 5. logic to test if db already exists and if to overwrite and export to text file?
 6. add ability to specify the order by in selectRows
 7. Other misc cleanup
+8. Should I change the data entry vector to store rest of pointers to each window?
+9. Should I change the data entry vector to store "RecordNotFound" etc.
 
 
 
