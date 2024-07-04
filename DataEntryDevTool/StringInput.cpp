@@ -1,4 +1,4 @@
-//  Version: 7.2.24.10.06
+//  Version: 7.4.24.16.41
 // File: StringInput.cpp
 #pragma once
 #include "DataEntry.h"
@@ -47,6 +47,8 @@ bool DataEntry::stringInput(DataEntry& dataEntry, std::ofstream& debugFile,int t
         wattron(savewinFullScreen, COLOR_PAIR(2));
         //wrefresh(savewinFullScreen);
         mvwprintw(savewinFullScreen, saveRow, saveColumn, EDIT$.c_str());
+        int x = EDIT$.find_last_not_of(' ') + 1;
+        wmove(savewinFullScreen, saveRow, saveColumn+x);
         wrefresh(savewinFullScreen);
         //wattroff(saveWin, COLOR_PAIR(2));
         //wattron(saveWin, COLOR_PAIR(3));

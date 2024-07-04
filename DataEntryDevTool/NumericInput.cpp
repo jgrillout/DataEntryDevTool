@@ -1,21 +1,21 @@
-// Version: 7.2.24.10.06
+// Version: 6.21.24.16.05
 // File: NumericInput.cpp
 #pragma once
 #include "DataEntry.h" 
 
-bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
+bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile, std::string inputAction)
 {
     std::string input = dataEntry.getFieldValue();
     input.erase(std::remove(input.begin(), input.end(), '\"'));
 
     std::string mask = dataEntry.getMask();
     mask.erase(std::remove(mask.begin(), mask.end(), '\"'));
-    WINDOW* savewinFullScreen = dataEntry.getwinFullScreen();
+    WINDOW* saveWin = dataEntry.getwinFullScreen();// getWin();
     size_t saveLen = dataEntry.getLength();
     int saveRow = dataEntry.getRow();
     int saveColumn = dataEntry.getFieldColumn();
-    int rows = savewinFullScreen->_maxy;
-    int cols = savewinFullScreen->_maxx;
+    int rows = saveWin->_maxy;
+    int cols = saveWin->_maxx;
     
     int leftSize = 0;
     int rightSize = 0;
@@ -23,7 +23,7 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
     inspectMask(mask, leftSize, rightSize);
     
     
-    displayRightToLeft(savewinFullScreen, input, saveRow, saveColumn, saveLen);
+    displayRightToLeft(saveWin, input, saveRow, saveColumn, saveLen);
 
 //Restart:
 //    dataEntry.setFieldValue(input);
@@ -42,16 +42,16 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
     bool hasDecimalPoint = false;
     bool firstpass = true;
     std::string Action = "";
-    wattron(savewinFullScreen, COLOR_PAIR(3));
-    wrefresh(savewinFullScreen);
+    wattron(saveWin, COLOR_PAIR(3));
+    wrefresh(saveWin);
     noecho(); // Disable echoing of characters
-    wrefresh(savewinFullScreen);
+    wrefresh(saveWin);
     while (quit != true)
     {
-        //jrg
-        wattroff(savewinFullScreen, COLOR_PAIR(3));
-        wattron(savewinFullScreen, COLOR_PAIR(2));
-        wrefresh(savewinFullScreen);
+        
+        wattroff(saveWin, COLOR_PAIR(3));
+        wattron(saveWin, COLOR_PAIR(2));
+        wrefresh(saveWin);
 
         //if (firstpass == true) {
         //    int inputSize = input.size(); // Size of the initial value
@@ -64,11 +64,7 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
             //wrefresh(saveWin);
         //    firstpass = false;
         //}
-
-
-
-        
-        ch = wgetch(savewinFullScreen);
+        ch = wgetch(saveWin);
 
 #pragma region //start of switch
         switch (ch)
@@ -105,27 +101,27 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
             break;
         case KEY_F(7):
             Action = "KEY_F(7)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(8):
             Action = "KEY_F(8)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(9):
             Action = "KEY_F(9)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_F(10):
             Action = "KEY_F(10)";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             break;
         case KEY_UP:
             Action = "KEY_UP";
-            wrefresh(savewinFullScreen);
+            wrefresh(saveWin);
             quit = true;
             goto  exitField; //jrg
             break;
@@ -208,15 +204,17 @@ bool DataEntry::NumericInput(DataEntry& dataEntry, std::ofstream& debugFile)
         //mvwprintw(saveWin, saveRow, saveColumn, blanks.c_str());
         //wrefresh(saveWin);
 
-        displayRightToLeft(savewinFullScreen, input, saveRow, saveColumn, saveLen);
+        displayRightToLeft(saveWin, input, saveRow, saveColumn, saveLen);
     }
     if (quit == true) {
-        //std::reverse(input.begin(), input.end());        
-        dataEntry.setFieldValue(input);//??
+        //std::reverse(input.begin(), input.end());
+        std::string inputResult = input;
+        dataEntry.setFieldValue(inputResult);
         dataEntry.setInputKeyPressed(Action);
-        wattroff(savewinFullScreen, COLOR_PAIR(2));
-        wattron(savewinFullScreen, COLOR_PAIR(3));
-        wrefresh(savewinFullScreen);
+        //inputAction = Action;
+        wattroff(saveWin, COLOR_PAIR(2));
+        wattron(saveWin, COLOR_PAIR(3));
+        wrefresh(saveWin);
         // indicates a funtion was  pressed and inputAction indicates which one
         return true;
 
@@ -234,11 +232,10 @@ exitField:
     //    std::reverse(input.begin(), input.end()); //??
     //    inputResult = input;
     //}
-    //inputResult = input;
-    //dataEntry.setFieldValue(inputResult);
-
-    dataEntry.setFieldValue(input);
+    std::string inputResult = input;
+    dataEntry.setFieldValue(inputResult);
     dataEntry.setInputKeyPressed(Action);
+    //inputAction = Action;
 
     dataEntry.displayData();
 

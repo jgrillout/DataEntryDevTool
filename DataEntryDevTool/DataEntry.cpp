@@ -1,4 +1,4 @@
-//  Version: 7.2.24.10.06
+//  Version: 7.4.24.16.41
 // File: DataEntry.cpp
 #include "DataEntry.h"
 // Constructor implementation
@@ -57,7 +57,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
         break;
 
     case 18: //NUMERIC:
-        fKey = NumericInput(dataEntry, debugFile);
+        fKey = NumericInput(dataEntry, debugFile, inputAction);
         break;
     case 19: //MASKED:
         fKey = MaskedInput(dataEntry, debugFile);
@@ -928,7 +928,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
     wrefresh(win);
     std::string inputResult = input;
     std::reverse(inputResult.begin(), inputResult.end()); 
-    inputResult = input;
+    //inputResult = input;
     // Display the input from right to left
     //startPos = startPos + -1; // Calculate the starting position for display
     //wattron(win, A_REVERSE);
@@ -939,9 +939,11 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
 
     wattroff(win, A_REVERSE);
     wrefresh(win);
-    // Move the cursor to the end of the input string
-    wmove(win, row, col+input.size()); //startPos
-    wrefresh(win);
+    //Move the cursor to the end of the input string
+    wmove(win, row, col + inputSize); //startPos
+    //int x = input.find_last_not_of(' ') + 1;
+    //wmove(win, row, col + x);
+    //wrefresh(win);
 }
  void DataEntry::displayMask(DataEntry& dataEntry, std::string& input,std::ofstream& debugFile) {
 

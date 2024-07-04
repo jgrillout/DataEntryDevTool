@@ -1,4 +1,4 @@
-// Version: 7.2.24.10.06
+// Version: 7.4.24.16.41
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -178,7 +178,7 @@ RecordEntryStart:
     std::vector<std::string>  fieldValues;
 
     debugFile << "before  While " << std::endl;
-    while (index < fields.size()) {
+    while (index < fields.size()) { 
     BeginField:
         wattron(winFullScreen, A_REVERSE);
         int functionKeyRow = stdscrRows - 2;
@@ -339,8 +339,8 @@ RecordEntryStart:
                             index = 1;
                         AddingNew = true;
                         EditingRecord = false;
-                        wattron(winFormArea, COLOR_PAIR(3));
-                        mvwprintw(winFormArea, field.getRow(), field.getFieldColumn(), field.getFieldValue().c_str());
+                        wattron(winFormArea, COLOR_PAIR(3));//JG
+                        mvwprintw(winFormArea, field.getRow()-1, field.getFieldColumn()-1, field.getFieldValue().c_str());
                         wrefresh(winFormArea);
                         goto BeginField;
                     }

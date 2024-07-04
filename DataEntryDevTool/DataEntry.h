@@ -1,4 +1,4 @@
-// Version: 7.2.24.10.06
+// Version: 7.4.24.16.41
 // File: DataEntry.h
 #pragma once
 #include "curses.h"
@@ -57,7 +57,7 @@ public:
 	//---------cut from stringInput.h-------------------------------------------
 	//static bool allowed(std::string type, char character, std::string EDIT$);
 	static bool stringInput(DataEntry& DataEntry, std::ofstream& debugFile, int test);
-	static bool NumericInput(DataEntry& dataEntry,std::ofstream& debugFile);
+	static bool NumericInput(DataEntry& dataEntry,std::ofstream& debugFile, std::string inputAction);
 	static bool MaskedInput(DataEntry& dataEntry, std::ofstream& debugFile);
 	static void displayRightToLeft(WINDOW* win, const std::string& input, int row, int col, int inputSize);
 	static std::string removeMask(const std::string& maskedInput);
