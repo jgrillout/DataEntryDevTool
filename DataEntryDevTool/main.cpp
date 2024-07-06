@@ -1,4 +1,4 @@
-// Version: 7.4.24.16.41
+// Version: 7.6.24.11.49
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
     std::string temp = "";
 
     // Read screen data from the file and initialize DataEntry objects
-    if (DataEntry::SetupFields(winFullScreen,winFormArea, fields, xmlFile) == false) {
+    if (DataEntry::SetupFields(winFullScreen,winFormArea, fields, xmlFile, debugFile) == false) {
         delwin(winFormArea);
         endwin();
         //std::cout << "setup_fields failed " << std::endl;
@@ -204,6 +204,10 @@ RecordEntryStart:
             goto notFunctionKey;
 
         temp = field.getFieldValue();
+        if (InputKeyPressed == "KEY_F(2)" && field.getInquiryAllowed() == "N") {
+            //Result = "Exit";
+            goto BeginField;
+        }
         
         if (InputKeyPressed == "KEY_F(2)" || InputKeyPressed == "KEY_F(5)" || InputKeyPressed == "KEY_F(7)")
             goto functionKeys;
@@ -303,8 +307,17 @@ RecordEntryStart:
             case PADENTER:
             case 16://KEY_ENTER under special circumstance not sure why getch returned 16
                  // here we can check the value input by the user after they press enter
-                 // 
-                 //primary key is should always be the first field
+                 // herehere
+                 
+                if (field.getFieldRequired() == "Y") {
+                    std::string temp = field.getFieldValue();
+                    DataEntry::removeTrailingSpaces(temp);
+                    if (temp == "") {
+                        beep();
+                        goto BeginField;
+                    }
+                }
+                //primary key  should always be the first field
                 if (index == 0 && field.getfieldName() == fieldNames[index]) {
 
                     condition = fieldNames[0] + " = \'" + fields[0].getFieldValue() + "\'";
@@ -368,6 +381,7 @@ RecordEntryStart:
 
     }
     
+    //goto BeginField;
     // if we reached this point that all field have been entered
     // loop back around to 2nd field on screen (without clearing fields) 
     // another option,instead of looping, would be to prompt the user to save the record
@@ -397,7 +411,7 @@ RecordEntryStart:
                 goto BeginField;
             }
         }
-        goto BeginField;
+       
         
 
     FunctionKeyError:

@@ -1,3 +1,121 @@
+inside SetupFields 
+<dataDictionary>
+tag= name  value=  EmpId
+tag= type  value=  STRING
+tag= mask  value=  
+tag= length  value=  10
+tag= row  value=  1
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Employee Id
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  Y
+tag= fieldRequired  value=  Y
+tag= name  value=  Name
+tag= type  value=  STRING
+tag= mask  value=  
+tag= length  value=  30
+tag= row  value=  2
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Name
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  Y
+tag= name  value=  Address
+tag= type  value=  STRING
+tag= mask  value=  
+tag= length  value=  30
+tag= row  value=  3
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Address
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  Y
+tag= name  value=  Salary
+tag= type  value=  NUMERIC
+tag= mask  value=  0000.00
+tag= length  value=  7
+tag= row  value=  4
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Salary
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  N
+tag= name  value=  Phone
+tag= type  value=  MASKED
+tag= mask  value=  (999) 999-9999
+tag= length  value=  14
+tag= row  value=  5
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Phone
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  N
+tag= name  value=  Email
+tag= type  value=  STRING
+tag= mask  value=  
+tag= length  value=  30
+tag= row  value=  6
+tag= col  value=  15
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Email
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  N
+tag= name  value=  FirstSaleDate
+tag= type  value=  DATE
+tag= mask  value=  99/99/9999
+tag= length  value=  10
+tag= row  value=  7
+tag= col  value=  20
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  First Sale Date
+tag= AllowedChoices  value=  
+tag= ChoiceDescriptions  value=  
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  N
+tag= name  value=  Marital Status
+tag= type  value=  CHOICE
+tag= mask  value=  
+tag= length  value=  1
+tag= row  value=  8
+tag= col  value=  20
+tag= defaultValue  value=  
+tag= label_column  value=  1
+tag= label_text  value=  Marital Status
+tag= AllowedChoices  value=  MSD
+tag= ChoiceDescriptions  value=  Married, Single, Divorced
+tag= inquiryAllowed  value=  N
+tag= fieldRequired  value=  N
 before  While 
 KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD DR                    
+KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
+KEY_ENTER index 5 field.getFieldValue().c_str() = N/A                           
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/31/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD DR                    
+KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
+KEY_ENTER index 5 field.getFieldValue().c_str() = N/A                           
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/31/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M

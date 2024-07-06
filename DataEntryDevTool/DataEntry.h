@@ -1,4 +1,4 @@
-// Version: 7.4.24.16.41
+// Version: 7.6.24.11.49
 // File: DataEntry.h
 #pragma once
 #include "curses.h"
@@ -38,6 +38,8 @@ private:
 	std::string InputKeyPressed;
 	std::string allowedChoices;
 	std::string choiceDescriptions;
+	std::string inquiryAllowed = "N";
+	std::string fieldRequired = "N";
 	
 
 public:
@@ -52,7 +54,7 @@ public:
 	//WINDOW* winFullScreen;
 	//WINDOW* winMsgArea;
 	
-	DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text, std::string allowedChoices, std::string choiceDescriptions);
+	DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea, std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text, std::string allowedChoices, std::string choiceDescriptions, std::string inquiryAllowed,std::string fieldRequired);
 	static bool AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW* winMsgArea,std::ofstream& debugFile);
 	//---------cut from stringInput.h-------------------------------------------
 	//static bool allowed(std::string type, char character, std::string EDIT$);
@@ -66,7 +68,7 @@ public:
 	static std::string combineInputWithMask(const std::string& mask, const std::string& input);
 	static std::string generateDisplayMask(const std::string& mask);
 	static bool validateXml(WINDOW* winFullScreen, WINDOW* winMsgArea, std::ifstream& xmlFile);
-	static bool SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea,std::vector<DataEntry>& fields, std::ifstream& inputFile);
+	static bool SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea,std::vector<DataEntry>& fields, std::ifstream& inputFile, std::ofstream& debugFile);
 	void displayData(); //const;    
 	void displayLabels();
 	static void parseCSVWithQuotes(std::string& line, std::vector<std::string>& tokens);
@@ -142,6 +144,12 @@ public:
 	const std::string& getChoiceDescriptions() const {
 		return choiceDescriptions;
 	}
+	const std::string& getInquiryAllowed() const {
+		return inquiryAllowed;
+	}
+	const std::string& getFieldRequired() const {
+		return fieldRequired;
+	}
 
 	
 	// Setters
@@ -191,5 +199,12 @@ public:
 	void setchoiceDescriptions(const std::string & newchoiceDescriptions) {
 		choiceDescriptions = newchoiceDescriptions;
 	}
+	void setInquiryAllowed(const std::string& newInquiryAllowed) {
+		inquiryAllowed = newInquiryAllowed;
+	}
+	void setFieldRequired(const std::string& newFieldRequired) {
+		fieldRequired = newFieldRequired;
+	}
+
 };
 

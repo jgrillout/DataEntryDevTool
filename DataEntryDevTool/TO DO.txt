@@ -1,5 +1,3 @@
-** NUMERIC INPUT NOT WORKING NOW
-
 
 -- FIX F2 WORKING ON ALL FIELDS
 --  add f2 allowed & field required

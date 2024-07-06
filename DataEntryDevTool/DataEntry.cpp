@@ -1,9 +1,9 @@
-//  Version: 7.4.24.16.41
+// Version: 7.6.24.11.49
 // File: DataEntry.cpp
 #include "DataEntry.h"
 // Constructor implementation
-DataEntry::DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea,std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text,std::string allowedChoices="", std::string choiceDescriptions="")
-    : winFullScreen(winFullScreen), winMsgArea(winMsgArea), field_name(field_name),fieldtype(fieldtype), field_mask(field_mask),len(len), row(row), field_column(field_column), field_value(field_value), label_column(label_column), label_text(label_text),allowedChoices(allowedChoices), choiceDescriptions(choiceDescriptions){}
+DataEntry::DataEntry(WINDOW* winFullScreen, WINDOW* winMsgArea,std::string field_name, std::string fieldtype, std::string field_mask, int len, int row, int field_column, std::string field_value, int label_column, std::string label_text,std::string allowedChoices="", std::string choiceDescriptions="", std::string inquiryAllowed="N", std::string fieldRequired="N")
+    : winFullScreen(winFullScreen), winMsgArea(winMsgArea), field_name(field_name),fieldtype(fieldtype), field_mask(field_mask),len(len), row(row), field_column(field_column), field_value(field_value), label_column(label_column), label_text(label_text),allowedChoices(allowedChoices), choiceDescriptions(choiceDescriptions),inquiryAllowed(inquiryAllowed), fieldRequired(fieldRequired){}
 
 
 void DataEntry::displayLabels() {
@@ -48,6 +48,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
     bool fKey = false;                
     std::string inputAction;
     std::string type = dataEntry.getFieldType();
+    std::string temp = dataEntry.getFieldValue();
     int test = DataEntry::stringSwitchNumber(dataEntry.getFieldType());
     
     switch (test)
@@ -116,7 +117,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
         return day <= daysInMonth[month - 1];
     }
 
-    bool DataEntry::SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea, std::vector<DataEntry>& fields, std::ifstream& xmlFile) {
+    bool DataEntry::SetupFields(WINDOW* winFullScreen, WINDOW* winMsgArea, std::vector<DataEntry>& fields, std::ifstream& xmlFile, std::ofstream& debugFile) {
 
         std::string field_name = "";
         std::string fieldtype = "";
@@ -129,22 +130,26 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
         std::string label_text = "";
         std::string AllowedChoices = "";
         std::string ChoiceDescriptions = "";
+        std::string InquiryAllowed = "";
+        std::string FieldRequired = "";
+        debugFile << "inside SetupFields " << std::endl;
 
         if (xmlFile.is_open()) {
             std::string line;
             std::getline(xmlFile, line);
+            debugFile << line<<std::endl;
             int x = 0;
         }
 
         // Read data from the file and initialize DataEntry objects
         std::string line;
         while (std::getline(xmlFile, line)) {// && line.find("</field>") == std::string::npos) {
-
+            //debugFile << line << std::endl;
             if (line.find("</field>") != std::string::npos) {
                 //were at the end of the field XML element.so add the field to the vector
                 if (!field_name.empty()) // just in case
 
-                    fields.emplace_back(winFullScreen, winMsgArea, field_name, fieldtype, field_mask, len, row, col, defaultValue, label_column, label_text, AllowedChoices, ChoiceDescriptions);
+                    fields.emplace_back(winFullScreen, winMsgArea, field_name, fieldtype, field_mask, len, row, col, defaultValue, label_column, label_text, AllowedChoices, ChoiceDescriptions, InquiryAllowed,FieldRequired);
             }
             std::string tag, value;
             // Find the positions of the opening and closing angle brackets
@@ -156,6 +161,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
                 // Trim leading and trailing whitespace characters from the tag
                 tag.erase(0, tag.find_first_not_of(" \n\r\t"));
                 tag.erase(tag.find_last_not_of(" \n\r\t") + 1);
+                //debugFile << tag << std::endl;
                 // Find the position of the opening angle bracket after the closing tag
                 size_t value_start_pos = line.find(">", end_pos);
                 if (value_start_pos != std::string::npos) {
@@ -169,6 +175,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
                         value.erase(value.find_last_not_of(" \n\r\t") + 1);
                         // Extract the value between the opening and closing tags
                         value = value.substr(0, value_end_pos);
+                        debugFile <<"tag= " << tag <<"  value=  " << value<<std::endl;
                     }
                 }
 
@@ -213,6 +220,20 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
                     ChoiceDescriptions = DataEntry::removeLeadingSpaces(value);
                     // remove double quote mark if any
                      ChoiceDescriptions.erase(std::remove(ChoiceDescriptions.begin(), ChoiceDescriptions.end(), '\"'), ChoiceDescriptions.end());
+                     
+                } //herehere
+                else if (tag == "inquiryAllowed") {
+
+                    InquiryAllowed = DataEntry::removeLeadingSpaces(value);
+                    // remove double quote mark if any
+                    InquiryAllowed.erase(std::remove(InquiryAllowed.begin(), InquiryAllowed.end(), '\"'), InquiryAllowed.end());
+
+                }
+                else if (tag == "fieldRequired") {
+
+                    FieldRequired = DataEntry::removeLeadingSpaces(value);
+                    // remove double quote mark if any
+                    FieldRequired.erase(std::remove(FieldRequired.begin(), FieldRequired.end(), '\"'), FieldRequired.end());
 
                 }
 
@@ -726,7 +747,7 @@ bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW*
      std::string line;
      bool dataDictionaryFound = false;
      bool fieldOpenTagFound = false;
-     std::vector<std::string> fieldTags = { "name", "type", "mask", "length", "row", "col", "defaultValue", "label_column", "label_text","AllowedChoices","ChoiceDescriptions"};
+     std::vector<std::string> fieldTags = { "name", "type", "mask", "length", "row", "col", "defaultValue", "label_column", "label_text","AllowedChoices","ChoiceDescriptions","inquiryAllowed","fieldRequired"};
      //int x = 0;
      while (std::getline(xmlFile, line)) {
          std::string msg = "line = "+line;

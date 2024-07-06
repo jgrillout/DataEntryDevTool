@@ -10,7 +10,9 @@
         <label_column>1</label_column>            
         <label_text>Employee Id</label_text>    
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>
+		<inquiryAllowed>Y</inquiryAllowed>
+		<fieldRequired>Y</fieldRequired>		
     </field>  
     <field>
         <name>Name</name>
@@ -23,9 +25,12 @@
         <label_column>1</label_column>            
         <label_text>Name</label_text>     
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>	
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>Y</fieldRequired>			
     </field>  
-    <field>
+    <field>.
+	
         <name>Address</name>
         <type>STRING</type>
         <mask></mask>
@@ -36,7 +41,9 @@
         <label_column>1</label_column>            
         <label_text>Address</label_text> 
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>	
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>Y</fieldRequired>		
     </field>  
     <field>
         <name>Salary</name>
@@ -49,7 +56,9 @@
         <label_column>1</label_column>            
         <label_text>Salary</label_text>  
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>
+        <inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>N</fieldRequired>	
     </field>  
     <field>
         <name>Phone</name>
@@ -62,7 +71,9 @@
         <label_column>1</label_column>            
         <label_text>Phone</label_text>     
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>N</fieldRequired>			
     </field>  
     <field>
         <name>Email</name>
@@ -75,7 +86,9 @@
         <label_column>1</label_column>            
         <label_text>Email</label_text>    
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>N</fieldRequired>			
     </field>  
 	<field>
         <name>FirstSaleDate</name>
@@ -88,7 +101,9 @@
         <label_column>1</label_column>            
         <label_text>First Sale Date</label_text>  
 		<AllowedChoices></AllowedChoices>
-		<ChoiceDescriptions></ChoiceDescriptions>		
+		<ChoiceDescriptions></ChoiceDescriptions>
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>N</fieldRequired>			
     </field>  	
 	<field>
         <name>Marital Status</name>
@@ -102,5 +117,7 @@
         <label_text>Marital Status</label_text>  
 		<AllowedChoices>MSD</AllowedChoices>
 		<ChoiceDescriptions>Married, Single, Divorced</ChoiceDescriptions>
+		<inquiryAllowed>N</inquiryAllowed>
+		<fieldRequired>N</fieldRequired>	
     </field>  	
 </dataDictionary>
