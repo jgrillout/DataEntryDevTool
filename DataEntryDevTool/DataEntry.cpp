@@ -1,4 +1,4 @@
-// Version: 7.6.24.11.49
+//Version: 7.6.24.20.22
 // File: DataEntry.cpp
 #include "DataEntry.h"
 // Constructor implementation
@@ -40,7 +40,7 @@ void DataEntry::displayData() {
 bool DataEntry::AcceptInput(DataEntry& dataEntry, WINDOW* winFullScreen, WINDOW* winMsgArea,std::ofstream& debugFile) {
 
     
-    WINDOW* savewinFullScreen = winFullScreen;// dataEntry.getwinFullScreen();
+    WINDOW* savewinFullScreen = dataEntry.getwinFullScreen(); //winFullScreen;// 
     int winRows = 0, winCols = 0;
     getmaxyx(savewinFullScreen, winRows, winCols);
     bool result = false;

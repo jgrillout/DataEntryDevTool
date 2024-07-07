@@ -1,4 +1,4 @@
-// Version: 7.6.24.11.49
+//Version: 7.6.24.20.22
 // File: main.cpp
 #pragma once
 #include "DataEntry.h"
@@ -51,14 +51,16 @@ int main(int argc, char* argv[]) {
 
     WINDOW* winFullScreen = newwin(stdscrRows, stdscrCols, 0, 0);
     assert(winFullScreen != NULL);
-
-    WINDOW* winFormArea = derwin(winFullScreen, stdscrRows -2, stdscrCols -2, 1, 1);
-    assert(winFormArea != NULL);
-    wattron(winFormArea, COLOR_PAIR(3));
-    wbkgd(winFormArea, COLOR_PAIR(3));    
-    keypad(winFormArea, TRUE);
+    
+    // is winFormArea needed so the F2 lookup scrolls properly?
+    //WINDOW* winFormArea = derwin(winFullScreen, stdscrRows -2, stdscrCols -2, 1, 1);
+    //assert(winFormArea != NULL);
+    //wattron(winFormArea, COLOR_PAIR(3));
+    //wbkgd(winFormArea, COLOR_PAIR(3));    
+    //keypad(winFormArea, TRUE);
 
     WINDOW* winMsgArea = newwin(4, stdscrCols -2, stdscrRows-4, 1);
+        
     assert(winMsgArea != NULL);
     wattron(winMsgArea, COLOR_PAIR(3));
     wbkgd(winMsgArea, COLOR_PAIR(3));
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]) {
     keypad(winMsgArea, TRUE);
 
     wrefresh(winMsgArea);
-    wrefresh(winFormArea);
+    //wrefresh(winFormArea);
     wrefresh(winFullScreen);
     
     if (DataEntry::validateXml(winFullScreen, winMsgArea, xmlFile)) {
@@ -91,12 +93,19 @@ int main(int argc, char* argv[]) {
     std::string temp = "";
 
     // Read screen data from the file and initialize DataEntry objects
-    if (DataEntry::SetupFields(winFullScreen,winFormArea, fields, xmlFile, debugFile) == false) {
-        delwin(winFormArea);
+    if (DataEntry::SetupFields(winFullScreen, winMsgArea, fields, xmlFile, debugFile) == false) {
+        delwin(winFullScreen);
+        delwin(winMsgArea);
         endwin();
         //std::cout << "setup_fields failed " << std::endl;
         return 1;
     }
+        //if (DataEntry::SetupFields(winFullScreen,winFormArea, fields, xmlFile, debugFile) == false) {
+    //    delwin(winFormArea);
+    //    endwin();
+    //    //std::cout << "setup_fields failed " << std::endl;
+    //    return 1;
+    //}
 
     std::vector<std::string> fieldNames;
     for (const auto& entry : fields) {
@@ -172,7 +181,7 @@ RecordEntryStart:
         field.displayLabels();
         field.displayData();
     }
-    wrefresh(winFormArea);
+    //wrefresh(winFormArea);
 
     size_t  index = 0;
     std::vector<std::string>  fieldValues;
@@ -218,7 +227,8 @@ RecordEntryStart:
         field.setFieldValue(temp);
         fieldValues.push_back(temp);
         field.displayData();        
-        wrefresh(winFormArea);
+        //wrefresh(winFormArea);
+        wrefresh(winFullScreen);
     functionKeys:
         Result = DataEntry::doFunctionKeys(winFullScreen, winMsgArea, arg1, AddingNew, lib, condition, fields, debugFile,InputKeyPressed);
         if (Result == "Exit")
@@ -352,9 +362,12 @@ RecordEntryStart:
                             index = 1;
                         AddingNew = true;
                         EditingRecord = false;
-                        wattron(winFormArea, COLOR_PAIR(3));//JG
-                        mvwprintw(winFormArea, field.getRow()-1, field.getFieldColumn()-1, field.getFieldValue().c_str());
-                        wrefresh(winFormArea);
+                        //wattron(winFormArea, COLOR_PAIR(3));//JG
+                        //mvwprintw(winFormArea, field.getRow() - 1, field.getFieldColumn() - 1, field.getFieldValue().c_str());
+                        //wrefresh(winFormArea);
+                        wattron(winFullScreen, COLOR_PAIR(3));//JG
+                        mvwprintw(winFullScreen, field.getRow()-1, field.getFieldColumn()-1, field.getFieldValue().c_str());
+                        wrefresh(winFullScreen);
                         goto BeginField;
                     }
                     if (Result == "RecordEntryStart") {
@@ -393,8 +406,11 @@ RecordEntryStart:
 
             field.displayData();
         }
-        wrefresh(winFormArea);
-        wattroff(winFormArea, COLOR_PAIR(2));
+        //wrefresh(winFormArea);
+        //wattroff(winFormArea, COLOR_PAIR(2));
+        wrefresh(winFullScreen);
+        wattroff(winFullScreen, COLOR_PAIR(2));
+        
         if (EditingRecord) {
             index = 1;
             goto BeginField;
@@ -432,11 +448,11 @@ RecordEntryStart:
         }
 Exit:
 
-        mvwprintw(winFormArea, 7, 1, "Press Enter to exit...");
+        mvwprintw(winFullScreen, 7, 1, "Press Enter to exit...");
         debugFile.close();
         xmlFile.close();
-        wrefresh(winFormArea);
-        wgetch(winFormArea);
+        wrefresh(winFullScreen);
+        wgetch(winFullScreen);
 
         // End curses mode
         endwin();

@@ -106,16 +106,64 @@ tag= inquiryAllowed  value=  N
 tag= fieldRequired  value=  N
 before  While 
 KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD DR                    
-KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
-KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
-KEY_ENTER index 5 field.getFieldValue().c_str() = N/A                           
-KEY_ENTER index 6 field.getFieldValue().c_str() = 07/31/2024
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
 KEY_ENTER index 7 field.getFieldValue().c_str() = M
 KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
-KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD DR                    
-KEY_ENTER index 3 field.getFieldValue().c_str() = 100.00
-KEY_ENTER index 4 field.getFieldValue().c_str() = (937) 430-0810
-KEY_ENTER index 5 field.getFieldValue().c_str() = N/A                           
-KEY_ENTER index 6 field.getFieldValue().c_str() = 07/31/2024
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
 KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+KEY_UP
+index = 6 tempnam = FirstSaleDate tempval 07/03/2024
+KEY_UP
+index = 5 tempnam = Email tempval 
+KEY_UP
+index = 4 tempnam = Phone tempval (999) 999-9999
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_UP
+KEY_UP
+KEY_UP
+KEY_UP
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+KEY_UP
+index = 6 tempnam = FirstSaleDate tempval 07/03/2024
+KEY_UP
+index = 5 tempnam = Email tempval 
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+KEY_ENTER index 7 field.getFieldValue().c_str() = M
+KEY_ENTER index 1 field.getFieldValue().c_str() = JOHN                          
+KEY_ENTER index 2 field.getFieldValue().c_str() = GARWOOD                       
+KEY_ENTER index 3 field.getFieldValue().c_str() = 200.00
+KEY_ENTER index 4 field.getFieldValue().c_str() = (999) 999-9999
+KEY_ENTER index 5 field.getFieldValue().c_str() =                               
+KEY_ENTER index 6 field.getFieldValue().c_str() = 07/03/2024
+before  While 
+before  While 
